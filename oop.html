@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<title>Object-Oriented Programming Basics</title>
+
+<xmp theme="spacelab" style="display:none;">
+
+## OOP background
+
+Object-Oriented Programming (OOP) is a software development paradigm organized around
+the concept of an **object**. OOP contrasts with other existing paradigms, such as procedural, functional, and event-driven programming. Programming paradigms generally have advantages and disadvantages in different contexts, and many programming languages are multi-paradigm at some level or another. Java is a highly object-oriented language, but has some procedural and functional features.
+
+
+Typically in object-oriented programming languages, OOP is performed by defining and creating objects through the use of **classes**. Classes can be conceptualized as recipes or blueprints for creating specific types of objects in a running computer program. A specific realization of a class as an object is known as an **instance** of an object.
+
+For example, in the code
+```java
+String text = "hello world"
+```
+the variable `text` is an object that, more specifically, is an instance of the class `String`. And as an instance of type `String`, `text` has access to a pretty wide variety of object-specific functions (called **methods**) that can be used to do processing:
+
+```java
+// just as seen in the java basics examples, String objects have a `split` method
+String[] split = text.split(" ");
+```
+
+
+At a very high level, object orientation is based on a set of 3 principles.
+
+- **Encapsulation**: The binding of program data together with the functions (referred to as **methods**) that will manipulate it. This actually aims to acheive a number of goals. Once thing we'll see even in small programs is that it achieves clearer code through a kind of separation of responsibilities of the various tasks in a program. Encapsulation also allows us to secure some portions of our code base from manipulation through data and method hiding. We'll see more examples of this later, though it becomes much more advantageous as a program grows in size.
+- **Inheritance**: A mechanism for hierarchical definition of objects, which allows one type of object to acquire some or all of the behavior of another previously defined type of object. This allows you to very efficiently re-use code, and define general categories of classes that can help organize large projects.
+- **Polymorphism**: A means for processing objects in different ways depending on their data type.
+
+We'll examine each of these OOP concepts through the use of a few simple code examples all relating to the same hypothetical program:
+
+*Imagine a program where we make use of circle geometry for something. We'll
+have different circles coming in and leaving the program, each with their own
+radius, perimeter, area, location, etc. At any moment we may want to update
+these value or reference them.*
+
+-----------------
+#### Encapsulation by example
+
+Let's start by illustrating what is meant by **encapuslation**.
+An imperative version of some of the code for the program described above might look like:
+
+```java
+// My program will contain some circles.
+// I'll store their radius and position information in separate arrays
+// Not sure how many I'll have, but I'll pre-allocate for 10 circles
+double[] radii = new double[10];
+int[][] position = new double[10][2];
+
+// Now I'll store info for two circles in the radius array
+radii[0] = 0.2;
+radii[1] = 3.14;
+
+// and store each of their x-y Cartesian coordinate positions in the position array
+position[0] = {0, 0};
+position[1] = {1, -5};
+
+// can make and use some area function with radius as the input
+double an_area = area(radii[0]);
+
+// I can update the state of a circle
+radii[1] = 2.94;
+position[1] = {2, 4};
+
+// check if two circles intersect by calling a different function
+// intersection is a function of position and radius, so i'd need to call a function with both
+boolean does_intersect = check_intersect(radii[0], position[0], radii[1], position[1])
+```
+
+which is entirely workable, but may become difficult to understand and maintain as the code base grows.
+We can achieve a bit more clarity with **encapsulation** and object classes.
+
+Now, pretend that we have defined a `Circle()` class somewhere else in the program, designed to take in the same radius and position data, and compute the same outputs.
+An object-oriented version of the above code could then look like:
+
+```java
+// I'll allocate two instances of Circle, though I could also create an array of them
+circle_a = new Circle(0.2, {0, 0});
+circle_b = new Circle(3.14, {1, -5});
+
+// each of these instances has access to the methods of Circle. For example, an area computing method
+double an_area = circle_a.area();
+
+// we can update the state of a circle by using "setter" methods
+circle_b.set_radius(2.94);
+circle_b.set_position({2, 4});
+
+// can check for intersection using a method on the circle class
+boolean does_intersect = circle_a.check_intersect(circle_b);
+```
+
+By **encapsulating** the radius and position data together  with the `Area()` and `check_intersect()` methods in the `Circle()` class, we have achieved clearer code at a high level, and have separated responsibilities of using the circle information from computing and maintaining the state of the data used to define it.
+
+The class definition for `Circle()` used above could look something like this, contained separately in it's own file (maybe `Circle.java`):
+
+```java
+public class Circle
+    // defines instance data
+    public Double radius;
+    public int[] position;
+
+    public void Circle(Double input_radius, int[] input_position)
+        // initializes an instance, sets data
+        radius = input_radius;
+        position = input_position;
+
+    public Double area() {
+        return Math.pi * radius * radius;
+    }
+
+    public boolean does_intersect(Circle other) {
+        //... returns a boolean
+    }
+
+    public void set_radius(Double new_radius) {
+        // ... updates radius, but returns nothing
+    }
+
+    public void set_position(int[] new_position) {
+        /// ... updates position, returns nothing
+    }
+
+```
+For simplicity, I left most of the methods without implementation. I just want to illustrate the structure of the class. We'll talk about what keywords like `public` mean a bit later.
+
+----------------
+#### Inheritance by example
+
+To understand **inheritance**, consider a case where I want to define a new class, but
+reuse the functionality of another already existing class. To continue the example of
+our Circle program, let's define a new type of circle the same way, except that
+for the purposes of computing area, [pi will be equal to 3.2. Which actually had the potential of being passed as law in Indiana in 1897.](https://en.wikipedia.org/wiki/Indiana_Pi_Bill)
+
+In other words, I want to define an `IndianaCircle` that does everything that a `Circle`
+already does, but has its own unique `area()` method. I do this by declaring that `IndianaCircle` **extends** (or inherits) from `Circle`, and redefine the `area()` method.
+
+```java
+public class IndianaCircle extends Circle
+    public Double area() {
+        return 3.2 * radius * radius;
+    }
+
+```
+That's actually all that is needed. I can now use this weird circle the way that
+I would use a normal circle:
+
+```java
+IndianaCircle weird_circle = new IndianaCircle(1.6, {0, 0});
+
+Double wrong_area = weird_circle.area();
+```
+
+It's worth noting that in Java, a class can only extend (i.e. inherit) from a single parent class.
+
+----------------------
+#### Polymorphism by example
+
+**Polymorphism** is an interesting concept with a few example cases in Java. Class inheritance demonstrated above actually shows one good example of polymorphic behavior, where we inherited the *structure* of the `Circle` base class, but modified the *behavior* of the `area()` method. That behavior modification in the derived class can be understood as an example of polymorphism.
+
+In addition, it's also important to understand that the way that inheritance hierarchies works is that of a subset/superset relationship.
+So, any instances of `IndianaCircle` will also
+be considered instances of its "parent" class, `Circle`. In other words, any place where I could validly use a `Circle` in my program, I could also use an `IndianaCircle` and Java will accept it at both compile time and run time.
+
+So, technically, I can call methods that take in
+`Circle` instances as arguments using `IndianaCircle`:
+
+```java
+IndianaCircle weird_circle = new IndianaCircle(1.6, {0, 0});
+Circle normal_circle = new Circle(100.21, {-20, 10});
+
+// this technically will run and work (though might not be mathematically valid)
+boolean check = normal_circle.does_intersect(weird_circle);
+
+```
+
+Generally, I can code to the higher-level `Circle` class, while using instances of it or any subclass (such as `IndianaCircle`):
+
+```java
+Circle normal_circle = new Circle(100.21, {-20, 10});
+Circle weird_circle = new IndianaCircle(1.6, {0, 0});
+```
+
+----------------------
+
+### Composition and delegation
+
+The superset-subset nature of inheritance can also be though of a "is-a" relationship.
+For example, `IndianaCircle` is a specific type of `Circle`.
+
+Another means of acheiving code re-use in object classes is through the use of **composition**, which could be thought of as a "has-a" relationship. That is instead of extending a new class from an existing class, one would include an instance of the existing class as a field in the new class.
+
+----------------------
+
+### ADTs and Interfaces
+
+An Abstract Data Type (or ADT) is a concept for specifying the functionality of a type of object, without specifying exact implementation details. An ADT is a specification for what something has and what it does, but not *HOW* it does it.
+
+For example, as a car driver I know that I'll use different cars over the years. I have some pretty basic expectations about how I interact with them:
+
+- They need to be easily re-fuelable
+- An accelerator needs to make it go
+- A brake pedal needs to make it stop
+- A steering mechanism needs to make it turn
+
+There's a lot of fine details that I don't necessarily care about (especially if I'm renting one): is it gas or diesel or electric? Are the brakes discs or drums? There's a good chance that I don't care. My expectation, as an end user, exists at a higher level of abstraction from those details. In other words, my focus is on my direct interface to the system as a whole, not necessarily what's going on under the hood. In a programming context, this is similar to the idea of an ADT.
+
+ADTs in Java can be realized through the use of **interfaces**.
+An **interface** is a programming construct, similar in some ways to a class, that defines the expected accessible
+data or methods of a class, *but without specifying the code for their implementation*. When we write a class and defined that it will **implement a specific interface**, there is a certain level of functionality that is then guaranteed to be available to any instance of that class. If that class does not actually implement the methods listed in an interface that it claims to implements, then the class will not actually compile.
+
+For example, perhaps our program shown above will include a variety of shapes: rectangles, circles, etc.
+Among these shape types, there is certain data and methods that will be common. For example, maybe we've decided that each shape type should be able to store a position, and compute its own area. The formula for computing that area will be distinct for each shape type, but I know that I do at least want each of them to compute it. An interface for our shapes could then be written as:
+
+```java
+public interface Shape {
+    public int[] position;
+
+    public double area();
+}
+```
+Here were have defined an interface called `Shape`, that has a data member called `position` (just like in the above `Circle` class), and an `area()` method. Note that the `area()` method does not actually give an implementation of the code to compute an area, that is not the purpose of an interface. The purpose is only to list the methods and attributes (data) that should be present within a class that implements this interface.
+
+This allows us to communicate intent and desired interaction of a class. Our circle class definition would then look like:
+
+```java
+public class Circle implements Shape {
+    ...
+    // everything else exactly the same as before
+    // since we already has a position array and area() method
+```
+Which really doesn't seem to add any benefit yet. But consider if we now add a rectangle class
+
+```java
+public class Rectangle implements Shape {
+    public Double width;
+    public Double height;
+    public int[] position;
+
+    public void Rectangle(Double w, Double h, int[] input_position)
+        width = w;
+        height = h;
+        position = input_position;
+
+    public Double area() {
+        return width * height;
+    }
+```
+Again, nothing really magic there so far.
+Advantages start to manifest once we have a few different types of objects that implement a common interface, which we have now. At a higher level, we can use the fact that both of these kinds of shapes implement the same
+interface to simplify the act of working with mixed collections of them:
+
+```java
+// let's make a collection of different shapes in an array
+// we can actually use the Shape interface as if it was a data type
+// even though we can't make an instance of a bare Shape()
+
+Shape[] some_shapes = new Shape[3];
+some_shapes[0] = new Circle(0.12, {0, 0})
+some_shapes[1] = new IndianaCircle(32.2, {1, -2})
+some_shapes[2] = new Rectangle(3.2, 5.7, {0, 1})
+
+// iterate over our collection. They are each different types of objects
+// But since they all implement `Shape`, I know they all have an area() method!
+// So let's loop over all shapes and print out their area.
+
+for (Shape this_shape : some_shapes) {
+    System.out.println(this_shape.area())
+}
+```
+This is sometimes called "programming to an interface".
+
+Unlike inheritance, classes in Java can actually implement multiple interfaces. For example, if we created some categories of graphics functionality in a `Graphic` interface, and print-out logging behavior in a `Loggable` interface, we could add those to the specification of our `Circle` class too:
+
+```java
+public class Circle implements Shape, Graphic, Loggable {
+    // etc.
+```
+
+Interfaces can also be extended, like classes, to create parent-child interface hierarchies.
+
+## When should I use inheritance vs. composition vs. interfaces?
+
+This is a question that I think you'll find a diverse set of opinions on in different programming communities. But the rule of thumb that I would give for this course is:
+
+- If I want to re-use code/implementations from an existing class into a new class:
+
+    - If I can imagine a linear and logical subset/superset relationsip, I would use inheritance by extending one class from another
+    
+    - If such a relationship isn't clear or if I want to re-use code from multiple "parent" classes, I would use composition instead by creating and storing instances of the parent classes that would have been extended into the child classes, and delegate functionality.
+
+- If I have multiple class types that may not share code, but will expose the same data and methods, then I would define a single interface type for them to implement separately.
+
+[Back to index](index.html)
+
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>

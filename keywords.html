@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<title>Keywords</title>
+
+<xmp theme="spacelab" style="display:none;">
+
+When writing a class in Java, there are a number of mechanisms that we can employ to more carefully control the accessibility of data members and methods of a class to the rest of the classes within our program.
+
+In a large-scale, multi-developer project, this can help protect the integrity of the objects that represent our program's state.
+
+They reserved keywords within the Java language that let us accomplish this kind of control are:
+
+- *public*:
+
+    - A *public* data member or method will be accessible to all other classes in a program.
+    So far, we've been using this as the default for data members and methods.
+
+
+- *private*:
+
+    - A *private* data member or method is only accessible to other methods within the same class. For example, consider a modification to our `Circle` class:
+
+    ```java
+    public class Circle {
+        // radius will not be directly accessible 
+        private radius;
+
+        //... (everything else stays the same)
+    }
+    ```
+    With this change to `Circle`, we'd get:
+    ```java
+    Circle a = new Circle(2.3, {0,0});
+    Double r = a.radius; // this would work before, but now will error
+    ```
+
+- *protected*:
+
+    - A *protected* data member or method is accessible to other classes within the same package and to subclasses, but not any other classes.
+
+- *final*:
+
+    - Any variable declared *final* cannot have its value changed after initialization.
+
+    - Any class method declared *final* cannot be overridden by a subclass.
+
+    - Think of them as constants
+
+    ```java
+    public class Universe {
+        // I don't think this will be changing
+        // setting this as final will prevent it from
+        // being reset, both within and outside of the class
+        final int speed_light_in_vacuum = 299792458;
+        // ...
+    }
+    ```
+- *static*:
+
+    - A data member or method declared *static* means that they are not connected to the existence of a instance of a class, and can be used by another class directly. For example, consider the class
+
+    ```java
+    public class Util {
+        public static double pi = 3.14;
+        public static double squared(double x) {
+            return x * x;
+        }
+    }
+    ```
+    We can then use the static elements of the `Util` class without creating an instance of `Util`:
+    
+    ```java
+        Double value = Util.pi;
+        Double y = Util.squared(2.0);
+    ```
+    You can use this, for example, to create and organize stand-alone utility functions and reference data.
+
+    From a memory point of view, static data is interesting in that if I have multiple instances of a single object type that has static data within the class definition, the static data is only allocated once on the heap, and then shared among all instances.
+
+[Back to index](index.html)
+
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>

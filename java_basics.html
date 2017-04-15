@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<title>Java basic data types</title>
+
+<xmp theme="spacelab" style="display:none;">
+
+This is meant to be a very short non-comprehensive primer on basic types and syntax of the Java language. It is assumed that all students have some familiarity with these concepts from earlier coursework in other languages.
+
+## Basic data types
+
+The Java language supports the common data types that you would expect to find in most programming languages.
+
+### *null*
+This is a natural type to start with. In fact, the **null** data type can be considered to be the default value of any variable that has been declared, but not initialized. Attempting to do most operations with an object that has a *null* value will result in an error known as a `NullPointerException`. We'll come across these in due time. 
+
+For now, you can think of the purpose of the *null* type and the `NullPointerException` error is to bring to our attention a situation where something in our program was not properly initialized, and they perform this job very well.
+
+### *int*
+The integer or `int` data type is used to store whole numbers between -2^31 and 2^32 - 1.
+
+**Example:**
+
+```java
+// int stores a positive or negative whole number
+int x = 3;
+
+// this will result in a value of 1, not 1.5
+int y = x / 2;
+
+// printing out an integer
+System.out.println(x);
+```
+-------------------------------
+### *double*
+The `double` data type stores a double-precision 64-bit IEEE 754 floating point number. Generally you use this to represent non-integer numerical values.
+
+**Example:**
+
+```java
+// int stores a positive or negative decimal number
+double pi = 3.1415;
+
+// you can use scientific notation as well as decimal input
+double small = -1.2e-15;
+
+// printing out a double
+System.out.println(pi);
+```
+-------------------------------
+
+### *boolean*
+The `boolean` data type is used to store either `true` or `false`. Used for conditional expressions and many other purposes.
+
+**Example:**
+
+```java
+// boolean stores either true or false
+boolean x = true;
+
+// we can use boolean operations to transform
+boolean y = !x;      // will be `false`
+boolean z = x || y;  // x OR y
+boolean w = x && y;  // x AND y
+
+// printing out a boolean
+System.out.println(x);
+```
+-------------------------------
+
+### *char*
+A `char` is used to represent a single text character.
+
+**Example:**
+
+```java
+// can store a single letter, number, or any unicode character as text.
+char letter = 'a';
+char my_number = '4';
+
+// printing out a char
+System.out.println(letter);
+```
+
+### *Arrays*
+
+An array is a collection of data stored contiguously in memory. An array can be used to store any of the previously listed data types, as well as more complex objects that we will see later.
+
+Elements of a populated array can be accessed by an integer index representing that elements place within the array. All array indices in Java begin from 0.
+
+An array of any data type can be declared by following the type name with `[]`.
+
+**Example:**
+
+```java
+// an array of integers
+int x[] = {0,1,2,3};
+
+// you can also split declaration from actually creating and populating the array
+double numbers[];
+numbers = new double[3]; // makes an empty array of three doubles
+numbers[0] = 0.2;        // first element
+numbers[1] = -1.56787;   // second element
+numbers[2] = 1e21;       // third element
+
+// printing out an array - use the Array class (see below)
+```
+
+Arrays can be created with more than one dimension. For example, I can store a 2-by-2 array of integers as:
+
+```java
+int[][] matrix = new int[2][2];
+matrix = {{1, 2},
+          {3, 4}}
+```
+
+## Class data types and utilities
+
+In addition to primitive data types, Java also has a variety of class-based data types and utilities which provide convenient processing methods.
+
+### *Arrays (class)*
+The `Arrays` utility class contains various methods for manipulating arrays (such as printing, sorting, and searching).
+
+**Example:**
+
+```java
+// an array of integers
+int x[] = {0,1,2,3};
+
+// can print this out with the Arrays.toString method
+System.out.println(Arrays.toString(x));
+
+int[] y = {5, 6, -2, 102};
+// Arrays.equals if two arrays contain the same data
+boolean z = Arrays.equals(x,y);
+
+```
+
+
+### *String*
+`String` objects represent an immutable collection of characters. Used to process words, sentences, and other streams of data.
+
+**Example:**
+
+```java
+String text = "hello world";
+// can produce a char array version of any string
+char[] letters = text.toCharArray();
+
+// can split a string into an array of strings based on a pattern
+String[] split = text.split(" "); // splits on the space to give a string array {"hello", "world"}
+
+// can check if a string contains a character or a specific word
+boolean has_z = text.contains("z");
+```
+----------------------------
+
+## Flow control
+
+Java contains has program flow control syntax that is common to many other languages, such as C, C++, etc.
+
+### "For" loops
+A for-loop specifies a specific range of iteration.
+
+**Example: Print out all whole numbers from 0 to 100**
+```java
+// can easily use an integer iteration variable for this
+for (int i=0; i <= 100; i++) {
+	System.out.println(i);
+}
+```
+
+Java 8 also provides simple ways to iterate over the elements of an array or other "linear" data structures (more on this later).
+
+**Example: print out the length of each word of the phrase "iteration is pretty fun"**
+
+```java
+// make our sentence, then separate the words automatically as an array
+String some_text = "iteration is pretty fun";
+String[] separate_words = some_text.split(" ");
+
+// we can iterate over this an operate on each word without using an index variable if we want
+// you would read this out loud as "for each String 'word' in separate_words, do this.."
+
+for (String word : separate_words) {
+    System.out.println(word.length());
+}
+```
+
+### "While" loops
+
+A "While" loop continues iterating over a block of code until a condition is met.
+
+**Example: Find the smallest number that is larger than one million, and divisible by both 123 and 42 (answer: 1000482).**
+
+```java
+// well, we might as well start at one million
+int i = 1000000;
+
+// while not divisible by 123, or not divisible by 42, keep incrementing it until it is
+while ((i % 123 !=0) || (i % 42 !=0)) {
+    i++;
+};
+
+// when the while loop stops, 'i' will be at the value we're looking for
+System.out.println(i);
+```
+
+### Conditionals
+
+A conditional statement determines whether a block of code will be executed or not based on a boolean value.
+
+**Example: For each whole number from 1 to 100: if the number is a multiple of three, print "Fizz". If it's a multiple of 5, print "buzz", if its a multiple of both 3 and 5, print "fizzbuzz". Otherwise, just print the number.**
+
+```java
+// classic "fizzbuzz" exercise
+// can be made more efficient!
+for (int i = 1; i <= 100; i++) {
+
+    if ((i % 3==0) && (i % 5==0)) {
+        System.out.println("fizzbuzz");
+    }
+
+    else if (i % 3 == 0) {
+        System.out.println("fizz");
+    }
+
+    else if (i % 5 == 0) {
+        System.out.println("buzz");
+    }
+
+    else {
+        System.out.println(i);
+    }
+}
+```
+
+[Back to index](index.html)
+
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>

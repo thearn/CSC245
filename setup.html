@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<title>Getting started</title>
+
+<xmp theme="spacelab" style="display:none;">
+
+## Opening up an IntelliJ project
+
+Assignments and lecture code will be distributed as zipped-up IntelliJ projects.
+
+To open one of them up, unzip the directory to a location on your machine. Then, start IntelliJ
+
+![alt text](images/setup/intellij_start.png "Starting IntelliJ")
+
+Click on "open", and select the unzipped directory to open up the workspace.
+
+![alt text](images/setup/blank.png "Open Project")
+
+You'll be greeted with a fairly blank screen. But if you follow the prompts on screen to open up the "Project View", you'll see a pane open on the left:
+
+![alt text](images/setup/project_view.png "Open Project")
+
+
+One the left side is a view of all of the files and directories within the current project. Generally, `src/main/java` will contain the Java source code for a project, while `src/test/java` will contain unit tests (more on those later).
+
+![alt text](images/setup/opened.png "Open Project")
+
+Opening a `.java` file will show us the source code that it contains, and we can begin editing it.
+
+## Running a Java program from IntelliJ
+
+If we want to run some Java code, first locate a class that has a `static` method called `main()`, that takes in a `String` array as an argument. Any class that matches that pattern is an executable starting point for a program. Later we'll cover what each of these concepts mean.
+
+Locating such a class, we can right-click on it, and select `Run (class name)` from the pop-up menu:
+
+![alt text](images/setup/run_class.png "Running")
+
+This will open up a pane on the bottom of the IDE, that shows us the output of compiling and running the program
+
+![alt text](images/setup/run_success.png "Open Project")
+
+## Dealing with Gradle errors
+
+I'm using the build automation tool [Gradle](https://gradle.org/) to manage dependencies and testing tasks that I'll use throughout the course. In fact, it'll automatically be bundled with each of the project directories that I zip up and give to you, so you won't need to install anything extra or do any editing to the gradle configuration files, it should generally "just work" (famous last words, I know). But if there are problems with it, here's generally how you fix them.
+
+When you try to run the code in a project that I give you for the first time, you might get a Gradle configuration error:
+
+![alt text](images/setup/gradle_error.png "Gradle Error")
+
+which indicates that you need to "reload" the Gradle configuration for a project. 
+
+![alt text](images/setup/reload_gradle.png "Gradle Error")
+
+To do that, open up the Gradle tool pane by selecting it from the top menu: View -> Tool Windows -> Gradle. This will open a pane on the right side of the IDE. Then, click the recycle-looking symbol to reload the configuration. Then try to re-run what you were trying to do. 
+
+If it works, you can go ahead and close the Gradle tool pane, you probably won't need to open it ever again for that project.
+
+If this fails, it may complain that your Gradle settings/defaults are invalid, and it offers you a choice to set them. You'll get a window that looks like:
+
+![alt text](images/setup/gradle_settings.png "Gradle Error")
+
+Go ahead and edit your settings to look like this. In particular, the *"Use Gradle Wrapper task configuration"* option, as well as the *"Gradle JVM"* selection. 
+
+If you still have errors after doing this, let me know I can help you out with it.
+
+## Running unit tests
+
+Unit tests are a very cool concept. A unit test is an automated bit of code that allows you to run a functionality check on another piece of code (for Java, typically on a class).
+
+For every assignment in the course, I will provide a project template, which may or may not have "skeleton" source code to start with. But I will always have a collection of tests to run, that check the basic functionality of the code that you need to write. 
+
+To run all unit tests that are available in a project, right-click on the `test` directory at the top-level of the project view, and select "Run 'All tests'"
+
+![alt text](images/setup/run_tests.png "Running tests")
+
+This will open a bottom pane in the IDE that will show you the output of running your code, along with enumerated success or failure of each unit test that exists in the project.
+
+For example, for a project containing one test that fails, we would see:
+![alt text](images/setup/test_fail.png "Test failure")
+
+If the tests were passing:
+![alt text](images/setup/test_success.png "Test pass")
+
+Always check that your code correctly compiles, successfully runs, and passes all unit tests before you submit it for grading.
+
+## Submitted completed assignments
+
+Now this is the easy part.
+
+When you have finished an assignment (which means running it and verifying that all unit tests pass for you), go ahead and make a zipped up copy of the project directory.
+
+With each student in the course, I will have a one-to-one shared directory using Dropbox, GDrive, or another file sync service. Once you've completed an assignment, place the zipped up directory **with the same name as the zip file as originally assigned** into your individually shared directory. E.g. if I give an assignment as `hw1.zip`, submit it back also named `hw1.zip`. I'll know that it's from you since I only share one directory with each student.
+
+A server of mine will copy, unzip, stage, compile, and run all unit tests on your submission locally. The output of this process will then be placed as a text-file receipt back into the shared directory, letting you know that I received it and whether it works on my end or not. **Assignment submissions are only accepted if they compile and pass all unit tests**
+
+One the receipt has been placed in the directory, the zipped up submission is automatically removed and archived, together with the compile and test report on my end, organized by names. I'll then do manual code review with feedback. You should keep your own copy of your assignment submissions as well, and certainly at the very least keep the unzipped working directory on your computer that you edited in IntelliJ. You can keep or delete the text receipt, it's your preference.
+
+If your assignment runs and passes all unit tests on your computer, but fails on my server, let me know. That shouldn't happen, but I may have a configuration bug or version mismatch in that case.
+
+![alt text](images/setup/submit.gif "Submitting")
+
+[Back to index](index.html)
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+</html>
