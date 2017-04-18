@@ -36,6 +36,11 @@ img {
   width: auto;
 }
 
+img[src$="centerme"] {
+  display:block;
+  margin: 0 auto;
+}
+
 /*******************************************************************
 
 This chunk is for Google's Code Prettify:

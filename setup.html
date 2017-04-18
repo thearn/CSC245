@@ -10,20 +10,20 @@ Assignments and lecture code will be distributed as zipped-up IntelliJ projects.
 
 To open one of them up, unzip the directory to a location on your machine. Then, start IntelliJ
 
-![alt text](images/setup/intellij_start.png "Starting IntelliJ")
+![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ")
 
 Click on "open", and select the unzipped directory to open up the workspace.
 
-![alt text](images/setup/blank.png "Open Project")
+![alt text](images/setup/blank.png?style=centerme "Open Project")
 
 You'll be greeted with a fairly blank screen. But if you follow the prompts on screen to open up the "Project View", you'll see a pane open on the left:
 
-![alt text](images/setup/project_view.png "Open Project")
+![alt text](images/setup/project_view.png?style=centerme "Open Project")
 
 
 One the left side is a view of all of the files and directories within the current project. Generally, `src/main/java` will contain the Java source code for a project, while `src/test/java` will contain unit tests (more on those later).
 
-![alt text](images/setup/opened.png "Open Project")
+![alt text](images/setup/opened.png?style=centerme "Open Project")
 
 Opening a `.java` file will show us the source code that it contains, and we can begin editing it.
 
@@ -33,11 +33,11 @@ If we want to run some Java code, first locate a class that has a `static` metho
 
 Locating such a class, we can right-click on it, and select `Run (class name)` from the pop-up menu:
 
-![alt text](images/setup/run_class.png "Running")
+![alt text](images/setup/run_class.png?style=centerme "Running")
 
 This will open up a pane on the bottom of the IDE, that shows us the output of compiling and running the program
 
-![alt text](images/setup/run_success.png "Open Project")
+![alt text](images/setup/run_success.png?style=centerme "Open Project")
 
 ## Dealing with Gradle errors
 
@@ -45,21 +45,21 @@ I'm using the build automation tool [Gradle](https://gradle.org/) to manage depe
 
 When you try to run the code in a project that I give you for the first time, you might get a Gradle configuration error:
 
-![alt text](images/setup/gradle_error.png "Gradle Error")
+![alt text](images/setup/gradle_error.png?style=centerme "Gradle Error")
 
-which indicates that you need to "reload" the Gradle configuration for a project. 
+which indicates that you need to "reload" the Gradle configuration for a project.
 
-![alt text](images/setup/reload_gradle.png "Gradle Error")
+![alt text](images/setup/reload_gradle.png?style=centerme "Gradle Error")
 
-To do that, open up the Gradle tool pane by selecting it from the top menu: View -> Tool Windows -> Gradle. This will open a pane on the right side of the IDE. Then, click the recycle-looking symbol to reload the configuration. Then try to re-run what you were trying to do. 
+To do that, open up the Gradle tool pane by selecting it from the top menu: View -> Tool Windows -> Gradle. This will open a pane on the right side of the IDE. Then, click the recycle-looking symbol to reload the configuration. Then try to re-run what you were trying to do.
 
 If it works, you can go ahead and close the Gradle tool pane, you probably won't need to open it ever again for that project.
 
 If this fails, it may complain that your Gradle settings/defaults are invalid, and it offers you a choice to set them. You'll get a window that looks like:
 
-![alt text](images/setup/gradle_settings.png "Gradle Error")
+![alt text](images/setup/gradle_settings.png?style=centerme "Gradle Error")
 
-Go ahead and edit your settings to look like this. In particular, the *"Use Gradle Wrapper task configuration"* option, as well as the *"Gradle JVM"* selection. 
+Go ahead and edit your settings to look like this. In particular, the *"Use Gradle Wrapper task configuration"* option, as well as the *"Gradle JVM"* selection.
 
 If you still have errors after doing this, let me know I can help you out with it.
 
@@ -67,19 +67,19 @@ If you still have errors after doing this, let me know I can help you out with i
 
 Unit tests are a very cool concept. A unit test is an automated bit of code that allows you to run a functionality check on another piece of code (for Java, typically on a class).
 
-For every assignment in the course, I will provide a project template, which may or may not have "skeleton" source code to start with. But I will always have a collection of tests to run, that check the basic functionality of the code that you need to write. 
+For every assignment in the course, I will provide a project template, which may or may not have "skeleton" source code to start with. But I will always have a collection of tests to run, that check the basic functionality of the code that you need to write.
 
 To run all unit tests that are available in a project, right-click on the `test` directory at the top-level of the project view, and select "Run 'All tests'"
 
-![alt text](images/setup/run_tests.png "Running tests")
+![alt text](images/setup/run_tests.png?style=centerme "Running tests")
 
 This will open a bottom pane in the IDE that will show you the output of running your code, along with enumerated success or failure of each unit test that exists in the project.
 
 For example, for a project containing one test that fails, we would see:
-![alt text](images/setup/test_fail.png "Test failure")
+![alt text](images/setup/test_fail.png?style=centerme "Test failure")
 
 If the tests were passing:
-![alt text](images/setup/test_success.png "Test pass")
+![alt text](images/setup/test_success.png?style=centerme "Test pass")
 
 Always check that your code correctly compiles, successfully runs, and passes all unit tests before you submit it for grading.
 
