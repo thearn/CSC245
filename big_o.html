@@ -1,18 +1,285 @@
 <!DOCTYPE html>
 <html>
-<title>title</title>
+<title>Complexity and Big-O</title>
 
 <xmp theme="spacelab" style="display:none;">
 
+# "Big-O" notation
+
+One of the things a new programmer discoveres pretty quickly is that there are
+often many different solutions to a single problem, and while they may achieve the
+same result, they are not necessarily equally efficient at doing it. Some programmed solutions to a given problem are
+faster or can be shown to use less memory, while others may be easier to understand and faster to actually implement.
+Trade-offs are a pretty natural thing and present everywhere in this line of work, and often there is [no single best](https://en.wikipedia.org/wiki/No_free_lunch_theorem) data structure or algorithm to optimally cover all use cases, often even within a narrowly defined class of problems.
+
+Nevertheless, we would still at least like to have the ability to categorize different algorithms in terms of these kinds of trade-offs, in order to aid in decision making when designing or rewriting software. [Complexity analysis](https://en.wikipedia.org/wiki/Analysis_of_algorithms) is the primary means for achieving this. Principal among the various complexity measures that can be used is what is called **Big-O** notation.
+
+Big-O, at a general level, is a means of describing the limiting behavior of a mathematical function. In context of complexity analysis, it is a way of classifying, in very broad strokes, how a computer algorithm scales as a function of the size of its input data.
+
+What do I mean by an algorithm in this case? I really mean any single piece of code within a program that you write. For example, consider the following method that takes in an integer array, and returns the largest value inside that array:
+
+```java
+public int max(int[] my_array) {
+    int largest = my_array[0];
+
+    for (int i = 0; i < my_array.length; i++) {
+        if (my_array[i] > largest) {
+            largest = my_array[i];
+        }
+    }
+
+    return largest;
+}
+```
+
+If we consider peeking inside an element of a data structure (our array) and comparing something or doing arithmetic with is as one unit of "work", how much "work" could running this method require, relative to the size of the array?
+
+We see that we are actually visiting and doing a `comparison` with every single element in the array once. If we let `n` be the size of the input array, we might say that the `max` method generally requires `n` units of work in order to find the maximum value.
+
+What about a method like this, that computers the sine of the square of the mid-point of an array (weird, but bear with me for a second):
+
+```java
+public double sinSquare(int[] x) {
+    int n = x.length;
+    double mid_value = x[n/2];
+    return Math.sin(mid_value * mid_value);
+}
+```
+
+How much work does this method do as a function of the size of the input array? If you think about it, though we are using the size of the array to find the mid-point, the total amount of work that we are doing does not really depend on it. A very nice thing about arrays is that they are *random-access* data structures, which means getting the first, second, middle, last, or *any* single element in an array all have the same computational cost, and it happens to be a very low cost. The `x.length` attribute is an integer that is stored when the array is first created, and is readily available (i.e. the elements of the array aren't being counted behinds the scene to get this number).
+
+Since we are always doing a little math to locate and grab the middle element in the array, and visiting no other element regardless of the size of the array, the computational cost of this function is independent from its size. At least in the sense of conceptualizing its cost as the size grows. We are also doing a sequence of mathematical operations (squaring the number be find at the midpoint, then taking the sine of it), but none of that actually gets more or less expensive as the size of the input array changes.
+
+Big-O is a tool meant to give us a more specific means to describe these things in a standard form. And when you get used to it, its actually pretty intuitive.
+
+### Technical definition
+
+These notes would be incomplete without the technical definition of Big-O. On the other hand, don't get too hung up on it just yet, as these notes are meant to be a less formal discussion overall.
+
+>  We say that a function `f` is in order `O(g)` if, for at least one choice of a constant `k > 0`, you can find a constant `a` such that the inequality `0 <= f(x) <= k * g(x)` holds for all `x > a`.
+
+This is a very mathematically precise way of saying "`f` grows no quicker than the function `g` as the size of its input grows arbitrarily large".
+
+One thing to highlight out of this definition is the consequence that if `f` is in class `O(g)`, then a constant multiple of it like `0.5 * f` is STILL in in the same class, `O(n)`. That isn't all that informative at the moment but will come up a bit later.
+
+### Linear complexity: O(n)
+
+I think the easiest example of Big-O to understand getting started is what we call the "linear" complexity class, or O(n). We actually already saw this in the first example above, the maximum-finding method:
+
+```java
+public int max(int[] my_array) {
+    int largest = my_array[0];
+
+    for (int i = 0; i < my_array.length; i++) {
+        if (my_array[i] > largest) {
+            largest = my_array[i];
+        }
+    }
+
+    return largest;
+}
+```
+
+How much work do we generally expect this to do, *as a function of the size of the input array*?
+We fully expect to loop over and visit every element in the array (thats hard-coded into the method in fact), so the amount of work is exactly equal to the array size. So, we would call this O(n) where, again, n refers to the size of the input.
+
+The key thing to get is that something can belong to a particular complexity class (like O(n)) even if the amount of work *isn't* guaranteed to be *exactly* that much. For example, consider the task of finding the location of a specific value in an array:
+
+```java
+public int findIndex(char[] letters, char value) {
+    // finds the first location of the char value within char array, letters
+    // if not found in "letters", returns -1
+    for (int i = 0; i < letters.length; i++) {
+        if (letters[i].equals(value)) {
+            return i;
+        }
+    }
+
+    return -1
+}
+```
+
+Again, how much work do we expect this to do, in terms of poking around in the input array `letters`?
+This one might seem a bit different, since if we find the location of the value, we break out of the loop by returning its location without having to visit the entire thing. Unfortunately, there's nothing about the situation which can tell us how likely that is to happen.
+
+But at the very least, we know we're looking at no more elements than the size itself - we know that we *MIGHT* visit the entire input array in order to find the value (or fail to find it altogether), though it might be less. Complexity analysis tends to lean towards the more pessimistic side. Since we only know an upper bound, would actually classify this as linear complexity, O(n). If we knew something specific about how `letters` is sorted or other information like that (making it much more efficient than it would seem), it's possible that we might be able to classify it differently, but in the general case that we have, all we can say is that we are doing no more than `n` units of work as `n` grows larger (i.e., O(n)).
+
+Lastly, consider the example of going over an array two times in a row (not a great design, just highlighting a point):
+
+```java
+public double Sum(double[] data) {
+    // loop over it to print all numbers out
+    for (number : data) {
+        System.out.println(number);
+    }
+
+    //loop over it a second time to computer the sum of the array
+    double sum = 0.0;
+    for (number : data) {
+        sum += number;
+    }
+}
+```
+
+We loop over and visit every element of the array once to print it, and then again to accumulate their values into a sum. Doing this as two separate loops instead of within a single loop is actually double the amount of work in accessing the elements of the array, but what is its complexity class? There are 2*n access operations, however O(2*n) = O(n), by definition. In other words, we still consider this to be a linear method on the input data, (rather than two-times-linear), the exact same complexity class if we more efficiently had put everything under a single for-loop. In other words, Big-O doesn't cover all nuances of design, as we'll see later in the course, its a tool for differentiating solutions from a larger birds-eye view.
+
+### Constant complexity: O(1)
+
+In some sense, this is taking the discussion back a step back a bit from linear complexity, but O(1) (or what we call the "constant" complexity class),
+is slightly trickier for some to understand at first. But O(1) is meant for classifying methods whose work has no dependence on the size of its input. This is the "nicest" complexity class you can have for something, as it implies perfect scalability.
+
+As always, the devil may be in the details of course. An array algorithm that is O(1) may actually be extremely computationally expensive when run, but we can at least guarantee by being an O(1) algorithm is that this cost is not a function of the size of its input.
+
+The second example in the introduction section is actually an example of O(1):
+
+```java
+public double sinSquare(int[] x) {
+    int n = x.length;
+    double mid_value = x[n/2];
+    return Math.sin(mid_value * mid_value);
+}
+```
+
+As discussed before, we are finding the location of the midpoint of the array, then squaring and taking the sine of the value that we find there. Since we are doing exactly this regardless of the size of the array, and accessing the computed midpoint of the array does not require us to visit any other location of the array, this is method has constant complexity, O(1).
+
+The mathematical operations surrounding the access of then midpoint of the array **DO** have a real computational cost, but again this cost does not have anything to do with the size of the array, so these costs get swept under the Big-O rug so to speak.
+
+It's important to understand that O(1) does NOT imply that we are only doing one computation or single access, it's the name of a general complexity class that covers ANY case where the cost does not scale with the input. To make another quick example:
+
+```java
+public double lastMinusFirst(double[] numbers) {
+    // computes the difference between the last and first element of the array
+    return numbers[numbers.length - 1] - numbers[0];
+}
+```
+
+This computes the difference between the last and first elements of an array of doubles. Pretty simple, and requires only two access into the array, and a subtraction operation between them. The focus is on accesses to the array really, and the number of them that we are doing is *independent* of the size of the array, it is always exactly two. So, we would say that this is also an O(1) method (i.e. we wouldn't call it O(2) just because it has two accesses into the input data).
+
+### Quadratic complexity, O(n^2)
+
+The quadratic complexity class O(n^2) covers algorithms whose cost grows as the square of the size of its input.
+There's a few ways that an algorithm like this can naturally come about.
+For example, let's say that I have an array of integers, and want to compute and print out the product of each one of them with every other integer in the same array.
+
+So for example, if my input array is `{1,5,2,5}`, I want to produce the same data in the multiplication table:
+
+|   | `1` | `5` | `2` | `5` |
+|-------|---|---|---|---|
+|   `1`   | 1 | 5 | 2 | 5 |
+|   `5`   | 5 | 25 | 10 | 25 |
+|   `2`   | 2 | 10 | 4 | 10 |
+|   `5`   | 5 | 25 | 10 | 25 |
+
+We could accomplish this by printing this information line-by-line with a two-level for-loop:
+
+```java
+public void printMult(int[] data) {
+    for (int i=0; i < data.length; i++) {
+        for (int k=0; k < data.length; k++) {
+            System.out.println(data[i] * data[k]);
+        }
+    }
+}
+```
+
+How much work is this doing, in a relative-number-of-array-accesses sense?
+At the first level of the for loop, we are visiting each element of the `data` array.
+Then, for *each single one of those*, we are accessing every element of the array in the second level of the loop below it. So the number of array accesses is the length squared, `n^2`, and we would say that this method is O(n^2).
+
+Just as for the other complexity classes, we don't necessarily need to always have EXACTLY n^2 accesses to be in O(n^2). For example one thing that you'll notice is that the table above is somewhat redundant; since multiplication is commutative (i.e. `x*y` = `y*x`) we really only need to top half or bottom half of it to have all the product information:
+
+|   | `1` | `5` | `2` | `5` |
+|-------|---|---|---|---|
+|   `1`   | 1 | 5  | 2  | 5 |
+|   `5`   |   | 25 | 10 | 25 |
+|   `2`   |   |    | 4  | 10 |
+|   `5`   |   |    |    | 25 |
+
+We can restrict our double-for loop to only produce the top portion of the table, by limiting the second level of the loop to only start where the first level is currently at in the array:
+
+```java
+public void printMult(int[] data) {
+    for (int i=0; i < data.length; i++) {
+        for (int k=i; k < data.length; k++) {
+            System.out.println(data[i] * data[k]);
+        }
+    }
+}
+```
+This is a better solution, since it is only half of the work! However, what would its complexity class be?
+We have 1/2 * n^2 operations now. But just as noted before, a constant proportional reduction in work does not actually change the complexity class, this solution is actually STILL an O(n^2) one. In fact if we could provably do 0.00001 % of the array accesses of something with a rockstar algorithm, that solution should be used, but technically that impact is not reflected in its Big-O classification; proportional improvements are necessarily swept under the rug.
+
+### Cubic (and higher polynomial) complexity: O(n^3), O(n^4), ...
+
+Higher order polynomial complexity classes come about in ways similar to what we've seen so far. Any time we see nested loops over the same data structure:
+
+```java
+    for (int i=0; i < data.length; i++) {
+        for (int k=i; k < data.length; k++) {
+            for (int j=k; j < data.length; j++) {
+                ...
+```
+
+it's a signal of polynomial complexity. If our nested loop is 2 levels deep and
+both levels are limited by the size of the same array, that entire nest is O(n^2) (which we saw in the last section). If it's 3 levels deep, then it would be O(n^3). And the same caveats apply.
+
+To be honest, cubic and higher complexity will be very, very rare in the algorithms and data structure operations that we discuss in this course. For day-to-day computing tasks, O(n^2) is often seen as the ceiling to avoid and certainty not exceed if at all possible. In fact, there's a [whole blog](https://accidentallyquadratic.tumblr.com/) dedicated towards documenting cases where O(n^2) code is accidentally released in production software, where better solutions are known to exist.
+
+### Logarithmic complexity: O(log n)
+
+Logarithmic complexity tends to be one of the tougher ones for some people to understand at first in terms of counting operations at a high level, so it may be easier to begin with an example.
+
+Let's say that we want to find the location (index) of a value within an array. We saw before that this was O(n) in the most general case. But let's make the case a bit more specific, let's say that we actually know beforehand that the input array that we are given is sorted, so all values in it are in increasing order.
+
+How would this change our strategy for finding the location of a specific value? We could ignore this extra bit of info altogether, and stick with the O(n) solution of just checking every place in the array. But an interesting strategy exists if we know that information is sorted. To understand it, think of how you would look for a name inside of a phone book or word inside a dictionary:
+
+- Open up to a random page
+- Look at the values there.
+    - If what I'm looking before comes before (in the alphabet) what I am seeing, I should jump to a page in the half of the book that comes before where I'm at
+    - If instead it is larger, jump to a page in the larger half
+- Repeat this process, keeping track of which portions of the book the value can't be in
+
+For numbers within an array, the phone-book-search-like procedure would look like
+
+```java
+public int search(double[] sorted_data, double value) {
+    // lowest and highest locations in the array where i might find the value
+    int n = sorted_data.length;
+    int low = 0;
+    int high = n - 1;
+
+    // start process in the middle
+    int location = n / 2;
+    double located = sorted_data[location];
+
+    while (located != value) {
+        if (value < located) { // if we're high, look in the left half of search space
+            high = location;   // restrict search space
+        }
+        else {                 // if low, look in the right half of search space
+            low = location;    // restrict search space
+        }
+
+        // if my two limits meet without finding the value, it isn't in the array
+        if (low == high) {
+            location = -1;
+            break;
+        }
+    }
+
+    return location;
+}
+```
+
 [Back to index](index.html)
 
-- number odd or even: o(1)
+<!-- - number odd or even: o(1)
 - phonebook as example
 - reading a book is o(n)
 - linear vs binary search, n vs log n
 - finding everyone with same first name: n^2
 - insertion sort is o(n^2)
-- generate all permutations of something: n!
+- generate all permutations of something: n! -->
 
 </xmp>
 

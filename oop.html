@@ -7,10 +7,12 @@
 ## OOP background
 
 Object-Oriented Programming (OOP) is a software development paradigm organized around
-the concept of an **object**. OOP contrasts with other existing paradigms, such as procedural, functional, and event-driven programming. Programming paradigms generally have advantages and disadvantages in different contexts, and many programming languages are multi-paradigm at some level or another. Java is a highly object-oriented language, but has some procedural and functional features.
+the concept of a programming entity called an **object**. OOP contrasts with other existing paradigms, such as procedural, functional, and event-driven programming.
+
+Broadly speaking, programming paradigms across the board have advantages and disadvantages in different contexts, and many programming languages are multi-paradigm at some level or another. Java is a highly object-oriented language, but also has some procedural and functional features.
 
 
-Typically in object-oriented programming languages, OOP is performed by defining and creating objects through the use of **classes**. Classes can be conceptualized as recipes or blueprints for creating specific types of objects in a running computer program. A specific realization of a class as an object is known as an **instance** of an object.
+Typically in object-oriented programming languages, OOP is performed by defining and creating objects through the use of **classes**. Classes can be conceptualized as recipes or blueprints for creating specific types of objects in a running computer program. A specific realization of a class as an object in a running program is known as an **instance**.
 
 For example, in the code
 ```java
@@ -26,9 +28,9 @@ String[] split = text.split(" ");
 
 At a very high level, object orientation is based on a set of 3 principles.
 
-- **Encapsulation**: The binding of program data together with the functions (referred to as **methods**) that will manipulate it. This actually aims to acheive a number of goals. Once thing we'll see even in small programs is that it achieves clearer code through a kind of separation of responsibilities of the various tasks in a program. Encapsulation also allows us to secure some portions of our code base from manipulation through data and method hiding. We'll see more examples of this later, though it becomes much more advantageous as a program grows in size.
-- **Inheritance**: A mechanism for hierarchical definition of objects, which allows one type of object to acquire some or all of the behavior of another previously defined type of object. This allows you to very efficiently re-use code, and define general categories of classes that can help organize large projects.
-- **Polymorphism**: A means for processing objects in different ways depending on their data type.
+- **Encapsulation**: The binding of program data together with the functions (referred to as **methods**) that will manipulate it. This actually aims to achieve a number of goals. Once thing we'll see even in small programs is that it achieves clearer code through a kind of separation of responsibilities of the various tasks in a program. Encapsulation also allows us to secure some portions of our code base from manipulation through data and method hiding. We'll see more examples of this later, though it becomes much more advantageous as a program grows in size.
+- **Code Reuse**: OOP allows one type of object to acquire some or all of the behavior of another previously defined type of object. This enables you to very efficiently re-use code within a project, and can help you to define general categories of classes for organizing large software projects.
+- **Polymorphism**: A means for processing objects in different ways depending on their data type. In other words, using the same interface for different underlying things.
 
 We'll examine each of these OOP concepts through the use of a few simple code examples all relating to the same hypothetical program:
 
@@ -127,15 +129,15 @@ public class Circle
 For simplicity, I left most of the methods without implementation. I just want to illustrate the structure of the class. We'll talk about what keywords like `public` mean a bit later.
 
 ----------------
-#### Inheritance by example
+#### Code reuse by inheritance
 
-To understand **inheritance**, consider a case where I want to define a new class, but
-reuse the functionality of another already existing class. To continue the example of
+Consider a case where I want to define a new class, but would also like to
+reuse all or a portion of the functionality of another already existing class. To continue the example of
 our Circle program, let's define a new type of circle the same way, except that
 for the purposes of computing area, [pi will be equal to 3.2. Which actually had the potential of being passed as law in Indiana in 1897.](https://en.wikipedia.org/wiki/Indiana_Pi_Bill)
 
 In other words, I want to define an `IndianaCircle` that does everything that a `Circle`
-already does, but has its own unique `area()` method. I do this by declaring that `IndianaCircle` **extends** (or inherits) from `Circle`, and redefine the `area()` method.
+already does, but has its own unique `area()` method. I do this by declaring that `IndianaCircle` **extends** (or **inherits**) from `Circle`, and redefine the `area()` method.
 
 ```java
 public class IndianaCircle extends Circle
@@ -155,14 +157,76 @@ Double wrong_area = weird_circle.area();
 
 It's worth noting that in Java, a class can only extend (i.e. inherit) from a single parent class.
 
+
+### Code reuse by composition and delegation
+
+The superset-subset nature of inheritance can also be though of a "is-a" relationship.
+For example, `IndianaCircle` is a specific type of `Circle`, which makes sense logically as well as by definition (we explicitly extended `Circle` to make `IndianaCircle`).
+But there are many instances where one would want to reuse the functionality of an existing class, but an "is-a" relationship is not a logical categorization mechanism.
+
+For these cases, another means of achieving code re-use in object classes is through the use of **composition**, which could be thought of as a "has-a" relationship. That is, instead of extending a new class from an existing class, one would include an instance of the existing class as a field in the new class.
+
+For example, consider an example where we would want to develop a program for representing astronomical objects, maybe for a planetarium system. To represent the objects to be studied, we'll have an object type, `Astronomical`
+
+```java
+class Astronomical {
+    // TBD
+}
+```
+
+
+
+Nature has an affinity for spheres and their 2D projections (circles), so the graphical representation of astronomical objects (stars, planets, moons, etc.) will likely require a model for circle geometry (like the `Circle` class we've been dealing with).
+
+But there is a wide variety of information that we may attach to an object of interest that has nothing to do with physical shape, such as temperature, color, relative velocity information, chemical composition, etc. In this case, it seems silly that we would choose to make `Astronomical` extend `Circle`. But, it is likely that I would want to have access to the functionality to `Circle` or another relevant shape class, such as the computation of visible area.
+
+Composition would work by defining instance of various classes as a data members of `Astronomical`, each filling a desired role
+
+```java
+class Astronomical {
+    // geometry model
+    public Circle shape;
+
+    // thermodynamics model
+    public Thermo temp;
+
+    // chemistry model
+    public Chemical chem;
+
+    public class Astronomical() {
+        // initialize all data members and models as needed...
+    }
+
+    public double visibleArea() {
+        return shape.area();
+    }
+
+    public double temperature() {
+        return temp.temperature();
+    }
+
+    public Map<String, double> chemicals() {
+        return chem.composition();
+    }
+
+}
+```
+
+In this case, three of the methods of `Astronomical` were **delegated** to
+methods of objects that the class has been composed with. This provides us a way to flexibly produce a fairly multi-functional object without necessitating complex inheritance hierarchies, while still being able to reuse code from a diverse set of bases.
+
+As of this writing, it is considered by many developers to be good practice in OOP languages to consider the use of [composition over
+the use of inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance) where possible. We'll talk more about this principal in class.
+
+
 ----------------------
 #### Polymorphism by example
 
-**Polymorphism** is an interesting concept with a few example cases in Java. Class inheritance demonstrated above actually shows one good example of polymorphic behavior, where we inherited the *structure* of the `Circle` base class, but modified the *behavior* of the `area()` method. That behavior modification in the derived class can be understood as an example of polymorphism.
+**Polymorphism** is a high level concept with a few example cases in Java. Roughly speaking, it is the ability of a set of different types of objects to interact in the same way (i.e. compatible interfaces). Class inheritance demonstrated above actually shows one good example of polymorphic behavior, where we inherited the *structure* of the `Circle` base class, but modified the *behavior* of the `area()` method. That behavior modification in the derived class can be understood as an example of polymorphism.
 
-In addition, it's also important to understand that the way that inheritance hierarchies works is that of a subset/superset relationship.
+In addition, it's also important to understand that the way that inheritance hierarchies works is that of a subset/superset relationship (the "is-a" relationship described previously).
 So, any instances of `IndianaCircle` will also
-be considered instances of its "parent" class, `Circle`. In other words, any place where I could validly use a `Circle` in my program, I could also use an `IndianaCircle` and Java will accept it at both compile time and run time.
+be considered instances of its "parent" class, `Circle`. A positive consequence is that any place where I could validly use a `Circle` in my program, I could also use an `IndianaCircle` and Java will accept it at both compile time and run time.
 
 So, technically, I can call methods that take in
 `Circle` instances as arguments using `IndianaCircle`:
@@ -176,27 +240,22 @@ boolean check = normal_circle.does_intersect(weird_circle);
 
 ```
 
-Generally, I can code to the higher-level `Circle` class, while using instances of it or any subclass (such as `IndianaCircle`):
+Generally, the polymorphic capabilities of Java (like many other OOP languages) mean that I can code to the higher-level `Circle` class, while actually operating on instances of it or any of its subclasses (such as `IndianaCircle`):
 
 ```java
 Circle normal_circle = new Circle(100.21, {-20, 10});
 Circle weird_circle = new IndianaCircle(1.6, {0, 0});
+
+// to the level of their shared methods, they will work the same way
+double areas = normal_circle.area() + weird_circle.area();
 ```
 
-----------------------
-
-### Composition and delegation
-
-The superset-subset nature of inheritance can also be though of a "is-a" relationship.
-For example, `IndianaCircle` is a specific type of `Circle`.
-
-Another means of acheiving code re-use in object classes is through the use of **composition**, which could be thought of as a "has-a" relationship. That is instead of extending a new class from an existing class, one would include an instance of the existing class as a field in the new class.
 
 ----------------------
 
 ### ADTs and Interfaces
 
-An Abstract Data Type (or ADT) is a concept for specifying the functionality of a type of object, without specifying exact implementation details. An ADT is a specification for what something has and what it does, but not *HOW* it does it.
+An Abstract Data Type (or ADT) is a high-level concept for specifying the functionality of a type of object, without specifying exact implementation details. In other words, an ADT is a specification for what a specific object has and what it does (i.e. how you interact with it), but not *HOW* it does it.
 
 For example, as a car driver I know that I'll use different cars over the years. I have some pretty basic expectations about how I interact with them:
 
@@ -212,7 +271,7 @@ An **interface** is a programming construct, similar in some ways to a class, th
 data or methods of a class, *but without specifying the code for their implementation*. When we write a class and defined that it will **implement a specific interface**, there is a certain level of functionality that is then guaranteed to be available to any instance of that class. If that class does not actually implement the methods listed in an interface that it claims to implements, then the class will not actually compile.
 
 For example, perhaps our program shown above will include a variety of shapes: rectangles, circles, etc.
-Among these shape types, there is certain data and methods that will be common. For example, maybe we've decided that each shape type should be able to store a position, and compute its own area. The formula for computing that area will be distinct for each shape type, but I know that I do at least want each of them to compute it. An interface for our shapes could then be written as:
+Among these shape types, there is certain data and methods that will be common. For example, maybe we've decided that each shape type should be able to store a position, and compute its own area. The formula for computing that area will be distinct for each shape type (`pi*r^2` for a circle, `b*h/2` for a triangle, etc.), but I know that I do at least want each of them to compute it as part of their specification. Since this `area` computing method will be unique, I expect little to no code reuse, so an inheritance hierarchy via class extension doesn't seem that attractive. Instead of a base `Shape` class, we could instead write a `Shape` interface:
 
 ```java
 public interface Shape {
@@ -221,9 +280,9 @@ public interface Shape {
     public double area();
 }
 ```
-Here were have defined an interface called `Shape`, that has a data member called `position` (just like in the above `Circle` class), and an `area()` method. Note that the `area()` method does not actually give an implementation of the code to compute an area, that is not the purpose of an interface. The purpose is only to list the methods and attributes (data) that should be present within a class that implements this interface.
+The interface `Shape`, as expected, has a data member called `position` (just like in the above `Circle` class), and an `area()` method. Note that the `area()` method does not actually give an implementation of the code to compute an area, that is not the purpose of an interface. Each of the individual shape types will need to do that. The purpose is only to list the methods and attributes (data) that should be present within a class that *implements* this interface.
 
-This allows us to communicate intent and desired interaction of a class. Our circle class definition would then look like:
+This allows us to communicate intent and desired interaction of a class. Our circle class can declare that it is implementing the `Shape` interface by using the *implements* keyword:
 
 ```java
 public class Circle implements Shape {
@@ -250,7 +309,7 @@ public class Rectangle implements Shape {
 ```
 Again, nothing really magic there so far.
 Advantages start to manifest once we have a few different types of objects that implement a common interface, which we have now. At a higher level, we can use the fact that both of these kinds of shapes implement the same
-interface to simplify the act of working with mixed collections of them:
+interface to simplify the act of working with mixed collections of them. In other words, we can achieve a measure of polymorphism similar to what we would get with inheritance or composition, even if we are not reusing code from existing classes:
 
 ```java
 // let's make a collection of different shapes in an array
@@ -270,28 +329,35 @@ for (Shape this_shape : some_shapes) {
     System.out.println(this_shape.area())
 }
 ```
-This is sometimes called "programming to an interface".
+Like in the example in the discussion on polymorphism, this is sometimes called "programming to an interface", and can provide an opportunity to write very expressive and readable code.
 
-Unlike inheritance, classes in Java can actually implement multiple interfaces. For example, if we created some categories of graphics functionality in a `Graphic` interface, and print-out logging behavior in a `Loggable` interface, we could add those to the specification of our `Circle` class too:
+Unlike inheritance, classes in Java can actually implement multiple interfaces. For example, if we created some categories of graphics rendering functionality in a `Graphic` interface, and print-out logging behavior in a `Loggable` interface, we could add those to the specification of our `Circle` class too, assuming that we are willing to implement the required data and methods:
 
 ```java
 public class Circle implements Shape, Graphic, Loggable {
     // etc.
+}
 ```
 
 Interfaces can also be extended, like classes, to create parent-child interface hierarchies.
 
 ## When should I use inheritance vs. composition vs. interfaces?
 
-This is a question that I think you'll find a diverse set of opinions on in different programming communities. But the rule of thumb that I would give for this course is:
+As you can guess there is a lot of flexibility possible with the organizational methods described here. I think what is often confusing to a new programmer is that there are a lot of possibilities that produce equally functioning code for a specific purpose, but perhaps not idiomatic to a particular language. The "right design" can seem a bit murky.
+
+So "what's the best way to organize my classes with these constructs?" is a question that you'll find a diverse set of opinions on in different programming communities. But the rule of thumb that I would give for this course is:
 
 - If I want to re-use code/implementations from an existing class into a new class:
 
-    - If I can imagine a linear and logical subset/superset relationsip, I would use inheritance by extending one class from another
-    
-    - If such a relationship isn't clear or if I want to re-use code from multiple "parent" classes, I would use composition instead by creating and storing instances of the parent classes that would have been extended into the child classes, and delegate functionality.
+    - If I can imagine a very obvious, linear, and logical subset/superset "is-a" relationship, I would use inheritance by extending one class from another. I would also double check that what I am looking for is a clear "is-a" relationship, not necessarily a "does-the-same-thing-as-a" relationship.
 
-- If I have multiple class types that may not share code, but will expose the same data and methods, then I would define a single interface type for them to implement separately.
+    - If such an "is-a" relationship isn't quite clear or if I want to re-use code from multiple "parent" classes, I would use composition instead by creating and storing instances of the parent classes that would have been extended into the child classes, and delegate functionality appropriately.
+
+- If I have multiple class types that may not share code, but I need to expose the same data and methods, then I would define a common interface type for these classes to implement.
+
+It isn't always a clear "this paradigm or that", of course. There are reasonable situations where we may mix and match inheritance, composition, and interfaces in an OOP setting, and (strictly speaking) there are no laws of programming against that. In all cases, the big principal that you should be driving for is the balance of maximizing various measures of efficiency together with the  minimization of system complexity and technical debt. And that's something to be learned and refined over the course of an entire career, rather than taught by a textbook or in the classroom. It can be a bit of a moving target as new tools become available.
+
+If this is information-overload so far, don't worry, we'll be doing lots of examples throughout the course.
 
 [Back to index](index.html)
 

@@ -10,19 +10,19 @@ In a large-scale, multi-developer project, this can help protect the integrity o
 
 They reserved keywords within the Java language that let us accomplish this kind of control are:
 
-- *public*:
+- ### **public**:
 
-    - A *public* data member or method will be accessible to all other classes in a program.
+    - A **public** data member or method will be accessible to all other classes in a program.
     So far, we've been using this as the default for data members and methods.
 
 
-- *private*:
+- ### **private**:
 
-    - A *private* data member or method is only accessible to other methods within the same class. For example, consider a modification to our `Circle` class:
+    - A **private** data member or method is only accessible to other methods within the same class. For example, consider a modification to our `Circle` class:
 
     ```java
     public class Circle {
-        // radius will not be directly accessible 
+        // radius will not be directly accessible
         private radius;
 
         //... (everything else stays the same)
@@ -34,15 +34,22 @@ They reserved keywords within the Java language that let us accomplish this kind
     Double r = a.radius; // this would work before, but now will error
     ```
 
-- *protected*:
+    A natural question for new developer is, "Why would I ever declare something in
+    my own code as private?".
 
-    - A *protected* data member or method is accessible to other classes within the same package and to subclasses, but not any other classes.
+    - manages complexity (the holy grail of computing). helps to simplify debugging when state is wonky
+    - communicates intent detween developers. theyre not out to get you, but mistakes/ugly hacks happen.
+    - keeps other developers from depending on implementations rather than interfaces/API
 
-- *final*:
+- ### **protected**:
 
-    - Any variable declared *final* cannot have its value changed after initialization.
+    - A **protected** data member or method is accessible to other classes within the same package and to subclasses, but not any other classes.
 
-    - Any class method declared *final* cannot be overridden by a subclass.
+- ### **final**:
+
+    - Any variable declared **final** cannot have its value changed after initialization.
+
+    - Any class method declared **final** cannot be overridden by a subclass.
 
     - Think of them as constants
 
@@ -55,20 +62,20 @@ They reserved keywords within the Java language that let us accomplish this kind
         // ...
     }
     ```
-- *static*:
+- ### **static**:
 
-    - A data member or method declared *static* means that they are not connected to the existence of a instance of a class, and can be used by another class directly. For example, consider the class
+    - A data member or method declared **static** means that they are not connected to the existence of a instance of a class, and can be used by another class directly. For example, consider the class
 
     ```java
     public class Util {
         public static double pi = 3.14;
         public static double squared(double x) {
-            return x * x;
+            return x ** x;
         }
     }
     ```
     We can then use the static elements of the `Util` class without creating an instance of `Util`:
-    
+
     ```java
         Double value = Util.pi;
         Double y = Util.squared(2.0);
@@ -76,6 +83,8 @@ They reserved keywords within the Java language that let us accomplish this kind
     You can use this, for example, to create and organize stand-alone utility functions and reference data.
 
     From a memory point of view, static data is interesting in that if I have multiple instances of a single object type that has static data within the class definition, the static data is only allocated once on the heap, and then shared among all instances.
+
+
 
 [Back to index](index.html)
 
