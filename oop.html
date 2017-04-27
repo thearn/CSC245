@@ -178,7 +178,7 @@ class Astronomical {
 
 Nature has an affinity for spheres and their 2D projections (circles), so the graphical representation of astronomical objects (stars, planets, moons, etc.) will likely require a model for circle geometry (like the `Circle` class we've been dealing with).
 
-But there is a wide variety of information that we may attach to an object of interest that has nothing to do with physical shape, such as temperature, color, relative velocity information, chemical composition, etc. In this case, it seems silly that we would choose to make `Astronomical` extend `Circle`. But, it is likely that I would want to have access to the functionality to `Circle` or another relevant shape class, such as the computation of visible area.
+But there is a wide variety of information that we may attach to an astronomical thing of interest that has nothing to do with physical shape, such as temperature, color, relative velocity information, chemical composition, etc. In this case, it seems silly that we would choose to make `Astronomical` extend `Circle`. But, it is likely that I would want to have access to the functionality to `Circle` or another relevant shape class, such as the computation of visible area.
 
 Composition would work by defining instance of various classes as a data members of `Astronomical`, each filling a desired role
 

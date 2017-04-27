@@ -1,11 +1,347 @@
 <!DOCTYPE html>
 <html>
-<title>title</title>
+<title>Overloading</title>
 
 <xmp theme="spacelab" style="display:none;">
+
+# Overloading and immutability
+
+Sometimes, we'd like to write a class with functionality that can work with
+multiple data types or object types as parameters. For example, perhaps we'd
+want to define a `Circle()` class like in last section, but would like to specify
+the radius in either `double` or `integer` values. Or (as we'll see later on) we've defined a neat type of data structure, but would like to use it to store any variety of object (such as a `String` or an instance of any other kind of class), not just a numerical type. We can achieve this with a
+feature known as "method overloading".
+
+## Example use case: mathematical vectors
+
+To motivate the discussion a bit, let's consider a new example case for the need to generalize a behavior across data types:
+the implementation of a mathematical vector class. Vectors are a building block to being able to implement a full linear algebra capability, [which is a cornerstone of nearly all scientific and technical computing](https://math.stackexchange.com/questions/256682/why-study-linear-algebra).
+
+Vectors are an [algebraic concept](https://en.wikipedia.org/wiki/Vector_space) that are actually not very complicated when examining them in implementation. At a very high level, a vector is a collection of numbers, such as
+
+$$x = \left[0, 4, 1\right]$$
+$$y = \left[10, 2.1, 7\right]$$
+
+such that a very specific notion of addition, subtraction and multiplication between them are defined.
+Vectors may contain integers, real numbers, complex numbers, or a variety of other types as individual elements.
+Vectors are also defined with a specific size in mind, and in many ways are very analogous to arrays in a programming context.
+
+In fact you can get reasonably far into coursework in linear algebra by just imagining vectors and matrices as a type of data structure and the mathematical concept of an array, but the real heart of their purpose isn't so much to use them as a multi-value data storage mechanism, it's the consequences operations that we can do between them.
+
+
+#### Vector addition and subtraction
+
+The sum or difference of two vectors is a new vector (in the same sense that the sum of two numbers is also a number), that is the result of
+adding or subtraction each of the two vector's elements individually. It's likely
+exactly what you expect that the addition would be. For example, using $x$ and $y$ defined above, we'd get:
+
+So in general for two vectors $x$ and $y$ with $n$ elements,
+
+$$x \pm y = \left[ x_1 \pm y_1, \ldots, x_n \pm y_n\right]$$
+
+and specifically in our case
+
+$$x + y = \left[0 + 10, 4 + 2.1, 1 + 7 \right] = \left[10, 6.1, 8\right]$$
+$$x - y = \left[0 - 10, 4 - 2.1, 1 - 7 \right] = \left[-10, 1.9, -6\right]$$
+
+#### Vector-scalar multiplication
+
+The multiplication of a single number times a vector is a new vector that has each of its elements scaled by the number. So if $a$ is a number, then:
+
+$$ax = \left[ a x_1, \ldots, a x_n\right]$$
+
+More concretely in our case,
+
+$$10x = \left[0, 40, 10\right]$$
+$$-2y = \left[-20, -4.2, -14\right]$$
+
+etc.
+
+#### Vector-vector multiplication
+This one may be a bit less intuitive at first, but the definition of the multiplication of two vectors is that you multiply the elements of each of the two vectors together as expected, but then you sum the result. In other words, the product of two vectors **is not a new vector**, but is a single number (sometimes referred to as a *scalar*). This definition of the product is notionally shown as a centered dot, $\cdot$, which gives it its common name of ["dot product"](https://en.wikipedia.org/wiki/Dot_product).
+
+So in general,
+
+$$x \cdot y = \sum_{i=1}^n x_i y_i$$
+
+and specifically in our case
+
+$$x \cdot y = 0\cdot 10 + 4\cdot 2.1 + 1\cdot7 = 0 + 8.4 + 7 = 15.4$$
+
+### Implementing a vector class
+
+With this background in hand, we can start to think about how we could define a mathematical vector class in Java. What I'd like to be able to do is create one using an array of numbers, and do addition and multiplication using relevant methods.
+
+Ideally, I'd like to be able to create it using either integer or double types, but have everything
+work as doubles behind the scenes (including result of any methods).
+
+```java
+Vector x = new Vector(new double[] {1.2, 5.7, 3.9});
+Vector y = new Vector(new int[] {-7, 15, 5});
+
+// everything should work as doubles behind the scenes, regardless of input type
+// z will be a vector backed by an array of doubles
+Vector z = x.add(y);
+
+// scalar product gives a new vector as well. scalar can be double or int
+Vector f = y.scale(2.0);
+
+// dot product results in a number, NOT a new vector
+double product = x.dot(y);
+
+// since methods will return a vector instead of modifying the current instance,
+// I can easily chain successive operations together if i want without worrying about state
+// let g = x + 0.5y - z;
+Vector g = x.add(y.scale(0.5)).add(z.scale(-1));
+```
+
+To allow for the creation of `Vector()` instances from either double or int arrays,
+we just have to define two separate constructor methods: one that takes an array of doubles,
+and one that takes an array of ints. That is, we start off by writing the code that enables both Vector `x = new Vector(new double[] {1.2, 5.7, 3.9});` and  `Vector y = new Vector(new int[] {-7, 15, 5});` to be instances of the same class:
+
+```java
+public class Vector {
+    private int n;
+    private double[] data;
+
+    public Vector(double[] input_data) {
+        n = input_data.length;
+        data = input_data;
+    }
+
+    public Vector(int[] input_data) {
+        n = input_data.length;
+        data = new double[n];
+        for (int i = 0; i < n; i++) {
+            this.data[i] = (double) input_data[i];
+        }
+    }
+
+    public double[] getData() {
+        return data;
+    }
+
+    // ... more to add below, like dot(), scale(), add()...
+}
+```
+At the top, we define that the instance data will be stored in a `double` array called `data`.
+When the input is a double array, everything is pretty simple. When it's an integer array,
+the values need to be cast into doubles individually into the `data` class member.
+
+We also established `data` as a `private` member of the class. This way, once a Vector is defined, it's
+data **cannot be changed**, it is what we'd call *immutable*. Instead, when operations which would result in a change to the value of a vector will always result in the return of a **new** vector, rather than a modification to the existing instance. When appropriate, [immutability can have the benefit of dramatically simplifying debugging later on, as well as making your object instances thread-safe](https://www.ibm.com/developerworks/java/library/j-jtp02183/index.html).
+
+We also define a `public` `getData()` method so that the underlying data, while immutable, can still at least be read in by other objects. But since `data` is `private`, it cannot be changed unless we also define `public` method to do that.
+
+The constructor also stores the vector size as well, to be used in the `add` and `dot` methods later.
+
+The `add()` method is fairly straightforward: it is public-ally callable, it returns a new `Vector()` that is constructed from
+a `double` array, and that array is made by adding up the elements from the current array to the elements of
+an array that we are adding in:
+
+```java
+    public Vector add(Vector other) {
+        double[] result_data = new double[n];
+        for (int i = 0; i < n; i++) {
+            result_data[i] = this.data[i] + other.getData()[i];
+        }
+        return new Vector(result_data);
+    }
+```
+Here we made use of the `getData()` method to access the underlying data of the `other` vector, in order to calculate the result as needed.
+
+
+The `scale()` method works similarly, it takes in a number and returns a new `Vector()` that is the
+result of multiplying it with each of the elements of the current instance's data array.
+
+But what kind of number will we accept? We want to support both `int` and `double` scalars, so we can use method overloading here to allow this. As before, we will store everything behind the scene and return all results as `double`s:
+
+```java
+    public Vector scale(double number) {
+        double[] result_data = new double[n];
+        for (int i = 0; i < n; i++) {
+            result_data[i] = this.data[i] * number;
+        }
+        return new Vector(result_data);
+    }
+
+    public Vector scale(int number) {
+        // cast to double, re-use method
+        double value = (double) number;
+        return scale(value);
+    }
+```
+
+The `dot()` method takes in a `Vector`, but returns a `double` as discussed before:
+
+```java
+    public double dot(Vector other) {
+        double result = 0.0;
+        for (int i = 0; i < n; i++) {
+            result += this.data[i] * other.getData()[i];
+        }
+        return result;
+    }
+```
+
+To test these things out, we can implement a `public static void main(String[] args)` method to experiment, then call the method directly within Intellij:
+
+```java
+    public static void main(String[] args) {
+        Vector x = new Vector(new double[] {1.2, 5.7, 3.9});
+        Vector y = new Vector(new int[] {-7, 15, 5});
+
+        Vector z = x.add(y);
+        // can use Arrays package to easily print an array
+        System.out.println(Arrays.toString(z.getData()));
+
+        Vector f = y.scale(2.0);
+        double product = f.dot(y);
+        System.out.println(product);
+
+        Vector g = x.add(y.scale(0.5)).add(z.scale(-1));
+        System.out.println(Arrays.toString(g.getData()));
+    }
+```
+
+Everything should compile and run, and show the output:
+```
+[-5.8, 20.7, 8.9]
+598.0
+[3.5, -7.5, -2.5]
+
+Process finished with exit code 0
+```
+
+### Simplified printing
+
+One improvement that would be beneficial would be to simplify the printing out
+of `Vector()` instances; lines like `System.out.println(Arrays.toString(z.getData()));` are a bit verbose. One easy way to do this is to implement a `toString()` method on `Vector()`, this is something
+that `System.out.println` will actually look for and call automatically if it is available.
+
+All that is required of a valid `toString()` implementation is to return a string (any string) that you
+feel is somehow useful for communicating the state of an instance of your class. A string showing the value of each element of the `data` array seems like a useful thing to return. And since we know `Arrays.toString` is a quick and easy way to turn an array into a string (and even used it already above), we can delegate to this method in our own classes' `toString()` method:
+
+```java
+    public String toString() {
+        return Arrays.toString(data);
+    }
+```
+
+With this, we can now print out any instance of a `Vector()` easily:
+
+```java
+System.out.println(x);
+```
+Which gives:
+```
+[1.2, 5.7, 3.9]
+
+Process finished with exit code 0
+```
+
+We could even take this one step further by encapsulating the actual printing procedure into a method:
+
+```java
+    public void log() {
+        System.out.println(this);
+    }
+```
+which we could then use as:
+```java
+x.log();
+```
+
+Which would return the same output as above. It's an optional thing to have in addition to
+`System.out.println` with `toString`. But you'll see me do this often in the course.
+
+Our final completed version of the Vector class is then given as:
+
+```java
+public class Vector {
+    private int n;
+    private double[] data;
+
+    public Vector(double[] input_data) {
+        n = input_data.length;
+        data = input_data;
+    }
+
+    public Vector(int[] input_data) {
+        n = input_data.length;
+        data = new double[n];
+        for (int i = 0; i < n; i++) {
+            this.data[i] = (double) input_data[i];
+        }
+    }
+
+    public double[] getData() {
+        return data;
+    }
+
+    public Vector add(Vector other) {
+        double[] result_data = new double[n];
+        for (int i = 0; i < n; i++) {
+            result_data[i] = this.data[i] + other.getData()[i];
+        }
+        return new Vector(result_data);
+    }
+
+    public double dot(Vector other) {
+        double result = 0.0;
+        for (int i = 0; i < n; i++) {
+            result += this.data[i] * other.getData()[i];
+        }
+        return result;
+    }
+
+    public Vector scale(double number) {
+        double[] result_data = new double[n];
+        for (int i = 0; i < n; i++) {
+            result_data[i] = this.data[i] * number;
+        }
+        return new Vector(result_data);
+    }
+
+    public Vector scale(int number) {
+        double value = (double) number;
+        return scale(value);
+    }
+
+    public String toString() {
+        return Arrays.toString(data);
+    }
+
+    public void log() {
+        System.out.println(this);
+    }
+
+    public static void main(String[] args) {
+        Vector x = new Vector(new double[] {1.2, 5.7, 3.9});
+        Vector y = new Vector(new int[] {-7, 15, 5});
+
+        Vector z = x.add(y);
+        z.log();
+
+        Vector f = y.scale(2.0);
+        double product = f.dot(y);
+        System.out.println(product);
+
+        Vector g = x.add(y.scale(0.5)).add(z.scale(-1));
+        System.out.println("g: " + g.toString());
+    }
+
+}
+```
 
 [Back to index](index.html)
 </xmp>
 
 <script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
 </html>
