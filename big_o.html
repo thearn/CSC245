@@ -56,15 +56,21 @@ Big-O is a tool meant to give us a more specific means to describe these things 
 
 These notes would be incomplete without the technical definition of Big-O. On the other hand, don't get too hung up on it just yet, as these notes are meant to be a less formal discussion overall.
 
->  We say that a function `f` is in order `O(g)` if, for at least one choice of a constant `k > 0`, you can find a constant `a` such that the inequality `0 <= f(x) <= k * g(x)` holds for all `x > a`.
+>  We say that a function $f$ is in order $\mathcal{O}(g)$ if, for at least one choice of a constant $k > 0$, you can find a constant $a$ such that the inequality $0 \le f\left(x\right) \le k \cdot g\left(x\right)$ holds for all $x > a$.
 
-This is a very mathematically precise way of saying "`f` grows no quicker than the function `g` as the size of its input grows arbitrarily large".
+This is a very mathematically precise way of saying "$f$ grows no quicker than the function $g$ as the size of its input grows arbitrarily large".
 
-One thing to highlight out of this definition is the consequence that if `f` is in class `O(g)`, then a constant multiple of it like `0.5 * f` is STILL in in the same class, `O(n)`. That isn't all that informative at the moment but will come up a bit later.
+One thing to highlight out of this definition is the consequence that if $f$ is in class $\mathcal{O}(g)$ , then a constant multiple of it like $0.5 \cdot f$ is STILL in in the same class, $\mathcal{O}(g)$ . That isn't all that informative at the moment but will come up a bit later.
 
-### Linear complexity: O(n)
+### Worst case vs. average case
 
-I think the easiest example of Big-O to understand getting started is what we call the "linear" complexity class, or O(n). We actually already saw this in the first example above, the maximum-finding method:
+Our default mode at looking at the complexity of functions is to represent a bound on the worst-case scenario for the behavior of a function with Big-O. However, if there is a good argument to be made that the worst-case scenario is a bit of a corner case and that, on average, you expect certain structure of your input data to influence the behavior of the function, this may be reported separately. This is sometimes difficult to do as it is a probabilistic argument, but it is an important distinction that can be made as we will see later in the course.
+
+In other words, some times we will see "Worst case" and "Best case" reported for some common algorithms and data structure operations. For now, we will illustrate just the worst-case analysis.
+
+### Linear complexity: $\mathcal{O}(n)$
+
+I think the easiest example of Big-O to understand getting started is what we call the "linear" complexity class, or $\mathcal{O}(n)$. We actually already saw this in the first example above, the maximum-finding method:
 
 ```java
 public int max(int[] my_array) {
@@ -81,9 +87,9 @@ public int max(int[] my_array) {
 ```
 
 How much work do we generally expect this to do, *as a function of the size of the input array*?
-We fully expect to loop over and visit every element in the array (thats hard-coded into the method in fact), so the amount of work is exactly equal to the array size. So, we would call this O(n) where, again, n refers to the size of the input.
+We fully expect to loop over and visit every element in the array (thats hard-coded into the method in fact), so the amount of work is exactly equal to the array size. So, we would call this $\mathcal{O}(n)$  where, again, n refers to the size of the input.
 
-The key thing to get is that something can belong to a particular complexity class (like O(n)) even if the amount of work *isn't* guaranteed to be *exactly* that much. For example, consider the task of finding the location of a specific value in an array:
+The key thing to get is that something can belong to a particular complexity class (like $\mathcal{O}(n)$ ) even if the amount of work *isn't* guaranteed to be *exactly* that much. For example, consider the task of finding the location of a specific value in an array:
 
 ```java
 public int findIndex(char[] letters, char value) {
@@ -102,7 +108,7 @@ public int findIndex(char[] letters, char value) {
 Again, how much work do we expect this to do, in terms of poking around in the input array `letters`?
 This one might seem a bit different, since if we find the location of the value, we break out of the loop by returning its location without having to visit the entire thing. Unfortunately, there's nothing about the situation which can tell us how likely that is to happen.
 
-But at the very least, we know we're looking at no more elements than the size itself - we know that we *MIGHT* visit the entire input array in order to find the value (or fail to find it altogether), though it might be less. Complexity analysis tends to lean towards the more pessimistic side. Since we only know an upper bound, would actually classify this as linear complexity, O(n). If we knew something specific about how `letters` is sorted or other information like that (making it much more efficient than it would seem), it's possible that we might be able to classify it differently, but in the general case that we have, all we can say is that we are doing no more than `n` units of work as `n` grows larger (i.e., O(n)).
+But at the very least, we know we're looking at no more elements than the size itself - we know that we *MIGHT* visit the entire input array in order to find the value (or fail to find it altogether), though it might be less. Complexity analysis tends to lean towards the more pessimistic side. Since we only know an upper bound, would actually classify this as linear complexity, $\mathcal{O}()$ . If we knew something specific about how `letters` is sorted or other information like that (making it much more efficient than it would seem), it's possible that we might be able to classify it differently, but in the general case that we have, all we can say is that we are doing no more than `n` units of work as `n` grows larger (i.e., $\mathcal{O}(n)$ .
 
 Lastly, consider the example of going over an array two times in a row (not a great design, just highlighting a point):
 
@@ -121,16 +127,16 @@ public double Sum(double[] data) {
 }
 ```
 
-We loop over and visit every element of the array once to print it, and then again to accumulate their values into a sum. Doing this as two separate loops instead of within a single loop is actually double the amount of work in accessing the elements of the array, but what is its complexity class? There are 2*n access operations, however O(2*n) = O(n), by definition. In other words, we still consider this to be a linear method on the input data, (rather than two-times-linear), the exact same complexity class if we more efficiently had put everything under a single for-loop. In other words, Big-O doesn't cover all nuances of design, as we'll see later in the course, its a tool for differentiating solutions from a larger birds-eye view.
+We loop over and visit every element of the array once to print it, and then again to accumulate their values into a sum. Doing this as two separate loops instead of within a single loop is actually double the amount of work in accessing the elements of the array, but what is its complexity class? There are $2n$ access operations, however $\mathcal{O}(2n) = \mathcal{O}(n)$ , by definition. In other words, we still consider this to be a linear method on the input data, (rather than two-times-linear), the exact same complexity class if we more efficiently had put everything under a single for-loop. In other words, Big-O doesn't cover all nuances of design, as we'll see later in the course, its a tool for differentiating solutions from a larger birds-eye view.
 
-### Constant complexity: O(1)
+### Constant complexity: $\mathcal{O}(1)$
 
-In some sense, this is taking the discussion back a step back a bit from linear complexity, but O(1) (or what we call the "constant" complexity class),
-is slightly trickier for some to understand at first. But O(1) is meant for classifying methods whose work has no dependence on the size of its input. This is the "nicest" complexity class you can have for something, as it implies perfect scalability.
+In some sense, this is taking the discussion back a step back a bit from linear complexity, but $\mathcal{O}(1)$ (or what we call the "constant" complexity class),
+is slightly trickier for some to understand at first. But $\mathcal{O}(1)$ is meant for classifying methods whose work has no dependence on the size of its input. This is the "nicest" complexity class you can have for something, as it implies perfect scalability.
 
-As always, the devil may be in the details of course. An array algorithm that is O(1) may actually be extremely computationally expensive when run, but we can at least guarantee by being an O(1) algorithm is that this cost is not a function of the size of its input.
+As always, the devil may be in the details of course. An array algorithm that is $\mathcal{O}(1)$ may actually be extremely computationally expensive when run, but we can at least guarantee by being an $\mathcal{O}(1)$ algorithm is that this cost is not a function of the size of its input.
 
-The second example in the introduction section is actually an example of O(1):
+The second example in the introduction section is actually an example of $\mathcal{O}(1)$:
 
 ```java
 public double sinSquare(int[] x) {
@@ -140,11 +146,11 @@ public double sinSquare(int[] x) {
 }
 ```
 
-As discussed before, we are finding the location of the midpoint of the array, then squaring and taking the sine of the value that we find there. Since we are doing exactly this regardless of the size of the array, and accessing the computed midpoint of the array does not require us to visit any other location of the array, this is method has constant complexity, O(1).
+As discussed before, we are finding the location of the midpoint of the array, then squaring and taking the sine of the value that we find there. Since we are doing exactly this regardless of the size of the array, and accessing the computed midpoint of the array does not require us to visit any other location of the array, this is method has constant complexity, $\mathcal{O}(1)$.
 
 The mathematical operations surrounding the access of then midpoint of the array **DO** have a real computational cost, but again this cost does not have anything to do with the size of the array, so these costs get swept under the Big-O rug so to speak.
 
-It's important to understand that O(1) does NOT imply that we are only doing one computation or single access, it's the name of a general complexity class that covers ANY case where the cost does not scale with the input. To make another quick example:
+It's important to understand that $\mathcal{O}(1)$ does NOT imply that we are only doing one computation or single access, it's the name of a general complexity class that covers ANY case where the cost does not scale with the input. To make another quick example:
 
 ```java
 public double lastMinusFirst(double[] numbers) {
@@ -153,11 +159,11 @@ public double lastMinusFirst(double[] numbers) {
 }
 ```
 
-This computes the difference between the last and first elements of an array of doubles. Pretty simple, and requires only two access into the array, and a subtraction operation between them. The focus is on accesses to the array really, and the number of them that we are doing is *independent* of the size of the array, it is always exactly two. So, we would say that this is also an O(1) method (i.e. we wouldn't call it O(2) just because it has two accesses into the input data).
+This computes the difference between the last and first elements of an array of doubles. Pretty simple, and requires only two access into the array, and a subtraction operation between them. The focus is on accesses to the array really, and the number of them that we are doing is *independent* of the size of the array, it is always exactly two. So, we would say that this is also an $\mathcal{O}(1)$ method (i.e. we WOULD NOT call it $\mathcal{O}(2)$ just because it has two accesses into the input data).
 
-### Quadratic complexity, O(n^2)
+### Quadratic complexity, $\mathcal{O}(n^2)$
 
-The quadratic complexity class O(n^2) covers algorithms whose cost grows as the square of the size of its input.
+The quadratic complexity class $\mathcal{O}(n^2)$ covers algorithms whose cost grows as the square of the size of its input.
 There's a few ways that an algorithm like this can naturally come about.
 For example, let's say that I have an array of integers, and want to compute and print out the product of each one of them with every other integer in the same array.
 
@@ -184,9 +190,9 @@ public void printMult(int[] data) {
 
 How much work is this doing, in a relative-number-of-array-accesses sense?
 At the first level of the for loop, we are visiting each element of the `data` array.
-Then, for *each single one of those*, we are accessing every element of the array in the second level of the loop below it. So the number of array accesses is the length squared, `n^2`, and we would say that this method is O(n^2).
+Then, for *each single one of those*, we are accessing every element of the array in the second level of the loop below it. So the number of array accesses is the length squared, $n^2$, and we would say that this method is $\mathcal{O}(n^2)$.
 
-Just as for the other complexity classes, we don't necessarily need to always have EXACTLY n^2 accesses to be in O(n^2). For example one thing that you'll notice is that the table above is somewhat redundant; since multiplication is commutative (i.e. `x*y` = `y*x`) we really only need to top half or bottom half of it to have all the product information:
+Just as for the other complexity classes, we don't necessarily need to always have EXACTLY n^2 accesses to be in $\mathcal{O}(n^2)$. For example one thing that you'll notice is that the table above is somewhat redundant; since multiplication is commutative (i.e. $x\cdot y = y \cdot x$) we really only need to top half or bottom half of it to have all the product information:
 
 |   | `1` | `5` | `2` | `5` |
 |-------|---|---|---|---|
@@ -207,9 +213,9 @@ public void printMult(int[] data) {
 }
 ```
 This is a better solution, since it is only half of the work! However, what would its complexity class be?
-We have 1/2 * n^2 operations now. But just as noted before, a constant proportional reduction in work does not actually change the complexity class, this solution is actually STILL an O(n^2) one. In fact if we could provably do 0.00001 % of the array accesses of something with a rockstar algorithm, that solution should be used, but technically that impact is not reflected in its Big-O classification; proportional improvements are necessarily swept under the rug.
+We have $\frac{1}{2} n^2$ operations now. But just as noted before, a constant proportional reduction in work does not actually change the complexity class, this solution is actually STILL an $\mathcal{O}(n^2)$ one. In fact if we could provably do 0.00001 % of the array accesses of something with a rockstar algorithm, that solution should be used, but technically that impact is not reflected in its Big-O classification; proportional improvements are necessarily swept under the rug.
 
-### Cubic (and higher polynomial) complexity: O(n^3), O(n^4), ...
+### Cubic (and higher polynomial) complexity: $\mathcal{O}(n^3)$, $\mathcal{O}(n^4)$, ...
 
 Higher order polynomial complexity classes come about in ways similar to what we've seen so far. Any time we see nested loops over the same data structure:
 
@@ -221,17 +227,17 @@ Higher order polynomial complexity classes come about in ways similar to what we
 ```
 
 it's a signal of polynomial complexity. If our nested loop is 2 levels deep and
-both levels are limited by the size of the same array, that entire nest is O(n^2) (which we saw in the last section). If it's 3 levels deep, then it would be O(n^3). And the same caveats apply.
+both levels are limited by the size of the same array, that entire nest is $\mathcal{O}(n^2)$ (which we saw in the last section). If it's 3 levels deep, then it would be $\mathcal{O}(n^3)$. And the same caveats apply.
 
-To be honest, cubic and higher complexity will be very, very rare in the algorithms and data structure operations that we discuss in this course. For day-to-day computing tasks, O(n^2) is often seen as the ceiling to avoid and certainty not exceed if at all possible. In fact, there's a [whole blog](https://accidentallyquadratic.tumblr.com/) dedicated towards documenting cases where O(n^2) code is accidentally released in production software, where better solutions are known to exist.
+To be honest, cubic and higher complexity will be very, very rare in the algorithms and data structure operations that we discuss in this course. For day-to-day computing tasks, $\mathcal{O}(n^2)$ is often seen as the ceiling to avoid and certainty not exceed if at all possible. In fact, there's a [whole blog](https://accidentallyquadratic.tumblr.com/) dedicated towards documenting cases where $\mathcal{O}(n^2)$ code is accidentally released in production software, where better solutions are known to exist.
 
-### Logarithmic complexity: O(log n)
+### Logarithmic complexity: $\mathcal{O}(\log n)$
 
 Logarithmic complexity tends to be one of the tougher ones for some people to understand at first in terms of counting operations at a high level, so it may be easier to begin with an example.
 
-Let's say that we want to find the location (index) of a value within an array. We saw before that this was O(n) in the most general case. But let's make the case a bit more specific, let's say that we actually know beforehand that the input array that we are given is sorted, so all values in it are in increasing order.
+Let's say that we want to find the location (index) of a value within an array. We saw before that this was $\mathcal{O}(n)$ in the most general case. But let's make the case a bit more specific, let's say that we actually know beforehand that the input array that we are given is sorted, so all values in it are in increasing order.
 
-How would this change our strategy for finding the location of a specific value? We could ignore this extra bit of info altogether, and stick with the O(n) solution of just checking every place in the array. But an interesting strategy exists if we know that information is sorted. To understand it, think of how you would look for a name inside of a phone book or word inside a dictionary:
+How would this change our strategy for finding the location of a specific value? We could ignore this extra bit of info altogether, and stick with the $\mathcal{O}(n)$ solution of just checking every place in the array. But an interesting strategy exists if we know that information is sorted. To understand it, think of how you would look for a name inside of a phone book or word inside a dictionary:
 
 - Open up to a random page
 - Look at the values there.
@@ -271,6 +277,25 @@ public int search(double[] sorted_data, double value) {
 }
 ```
 
+How much work does something like this take? What is its complexity class?
+The answer to this is sort of between the lines of the procedure itself. Note
+that every step of the algorithm, we are splitting the remaining search space in two,
+determining which half will remain, **and discarding the other half** for the remainder of
+the search. So at every step, the size of the search space is shrinking proportionally by one half.
+
+The real question then is, how much does this work grow as the original search space size, $n$ grows?
+If I were to double the array size to $2n$, the first step of the algorithm would divide it in half, leaving me with $n$, and the algorithm would continue as before. In other words, doubling the size increased the number of operations by one.
+
+If I doubled it again to $2 \cdot 2 n = 4n$, I would be adding two more iterations of the search procedure over the original size, $n$. If kept doubling and doubling it, $2^k n$, I would be adding $k$ additional steps to the search. Therefore, **the amount of work increases proportional to the logarithm of the size of the input**. This is the key feature of the logarithmic complexity class, $\mathcal{O}(\log n)$.
+
+Every single algorithm that belongs to $\mathcal{O}(\log n)$ has a "divide and conquer" type logic within it. They all process an $n$ sized amount of data by subdividing it in some manner, and iteratively subdividing it further. Perhaps not by a half exactly, but by some proportional amount that refocuses and shrinks the size of the search or operation space.
+
+How good is $\mathcal{O}(\log n)$ in comparison to the other complexity classes? It exists between the constant class $\mathcal{O}(1)$ and the linear class $\mathcal{O}(n)$. Logarithmic complexity algorithms tend to be considered very efficient.
+
+### References for further reading
+
+- [Big-O Algorithm Complexity Cheat Sheet](http://bigocheatsheet.com/)
+
 [Back to index](index.html)
 
 <!-- - number odd or even: o(1)
@@ -284,4 +309,10 @@ public int search(double[] sorted_data, double value) {
 </xmp>
 
 <script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
 </html>

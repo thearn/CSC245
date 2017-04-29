@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<title>title</title>
+
+<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
+
+<xmp theme="spacelab" style="display:none;">
+
+# Dynamic arrays and the list ADT
+
+At this point, we begin the discussion of data structures proper.
+
+So far the only data structure that we have used is the basic typed array, such
+as `int[]`, `String[]`, etc. Arrays are a fundamental structure that exist in the
+core of every computing language, and do have some great properties.
+
+When comparing between data structures, it's usually informative to first list
+the type of operations that you would like to do with them. Across the board,
+there are several operations that we can consider:
+
+> ### Common data structure operations:
+> - *Access* : Reading a specific element from the data structure by location
+>
+>- *Search* : Locating a specific element from the data structure by value
+>
+>- *Insertion* : Adding a new element to the data structure
+>
+>- *Deletion* : Removing an existing element from a data structure
+
+Consider what these operations look like for the basic typed arrays that we have been using
+
+#### Array access operation:
+
+Arrays are great because we can access any location in the array by index directly. For example, if `x` is an array, we know that we can get the 3rd element of `x` by accessing `x[2]`. Behind the scenes, arrays are represented by a contiguous block of memory, so the accessed locations are fixed offsets from the starting value.
+
+This means that the array access operation is actually independent of the size of the array itself, **and is therefore an** $O\left(1\right)$ **operation.**
+
+#### Array search operation:
+
+For search, we're looking to find a location in an array where the value is equal to some specified search value. For instance, if we want to find the word "cat" in an array `String[] words` (with no additional assumptions), then we would have to potentially look at every element in the array for a match. A method for doing this would look like:
+
+```java
+public int search(String value, String[] words) {
+    // search for a value in an array, return its location
+    for (int i = 0; i < words.length; i++) {
+        if (words[i].equals(value)) {
+            return i;
+        }
+    }
+    return -1
+}
+```
+
+We saw this before in the discussion on [Big-O notation](big_o.html), and that this was an operation with $O\left(n\right)$ (i.e. linear) complexity. Therefore, the search operation for arrays is $O\left(n\right)$.
+
+#### Array insertion operation:
+
+For arrays, this is where things can get tricky. One hand, setting a value in an array is pretty simply.
+If I want to fill up an integer array with a few values, all I have to do to get started is:
+
+```java
+```
+
+#### Array deletion operation:
+
+[Back to index](index.html)
+</xmp>
+
+<script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+</html>
