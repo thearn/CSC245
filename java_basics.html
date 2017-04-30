@@ -10,13 +10,19 @@ This is meant to be a very short non-comprehensive primer on basic types and syn
 
 The Java language supports the common data types that you would expect to find in most programming languages.
 
+
+-------------------------------
+
 ### *null*
 This is a natural type to start with. In fact, the **null** data type can be considered to be the default value of any variable that has been declared, but not initialized. Attempting to do most operations with an object that has a *null* value will result in an error known as a `NullPointerException`. We'll come across these in due time. 
 
 For now, you can think of the purpose of the *null* type and the `NullPointerException` error is to bring to our attention a situation where something in our program was not properly initialized, and they perform this job very well.
 
+
+-------------------------------
+
 ### *int*
-The integer or `int` data type is used to store whole numbers between -2^31 and 2^32 - 1.
+The integer or `int` data type is used to store whole numbers between $-2^{31}$ and $2^{32} - 1$.
 
 **Example:**
 
@@ -30,6 +36,22 @@ int y = x / 2;
 // printing out an integer
 System.out.println(x);
 ```
+
+-------------------------------
+### *long*
+
+A `long` is used to represent whole numbers in the range $-2^{64}$ and $2^{64} - 1$. 
+
+`long`s can represent much larger integer values than `int`, but will use more memory. `int` is generally more appropriate for integers whose range is reasonably bounded (like as iteration indices over arrays, etc.) while `long`s are more appropriate for numerical computing with whole numbers (particularly for number theory).
+
+```java
+int number = 2147483649; // will not compile, number is too large for int
+
+// long will work though
+// long values literals are written as integers, but with a capital "L" after the last digit
+long number = 2147483649L;
+```
+
 -------------------------------
 ### *double*
 The `double` data type stores a double-precision 64-bit IEEE 754 floating point number. Generally you use this to represent non-integer numerical values.
@@ -237,6 +259,11 @@ for (int i = 1; i <= 100; i++) {
 [Back to index](index.html)
 
 </xmp>
-
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
 <script src="src/strapdown.js"></script>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>title</title>
+<title>Dynamic arrays and lists</title>
 
 <!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
 
@@ -23,7 +23,7 @@ there are several operations that we can consider:
 >
 >- *Search* : Locating a specific element from the data structure by value
 >
->- *Insertion* : Adding a new element to the data structure
+>- *Insertion* : Adding a new element to the data structure at a specific place (or wherever allowed).
 >
 >- *Deletion* : Removing an existing element from a data structure
 
@@ -56,12 +56,196 @@ We saw this before in the discussion on [Big-O notation](big_o.html), and that t
 #### Array insertion operation:
 
 For arrays, this is where things can get tricky. One hand, setting a value in an array is pretty simply.
-If I want to fill up an integer array with a few values, all I have to do to get started is:
+For example, if I want to fill up an integer array with a few values, all I have to do to get started is:
 
 ```java
+int[] x = new int[3];
+x[0] = 2;
+x[1] = -1;
+x[2] = 10;
 ```
 
-#### Array deletion operation:
+and the array is filled. But what if I wanted to add in a new number (say, a 5) in the second spot, between the 2 and the -1 elements (shifting them to new places)? 
+
+Arrays actually do not support this kind of operation directly, but we can get around this by creating a new array to replace the existing one. So array insertion generally requires that a larger array be created, and the existing elements copied over:
+
+```java
+int[] temp = new int[10]; // extra space, because why not
+// move things into the new array, make space for our new value
+temp[0] = x[0]
+temp[1] = 5 // new number in the 2nd place
+// copy the rest
+for (int i = 2; i < x.length; i++) {
+    temp[i] = x[i];
+}
+
+// re-assign reference, we can now use `x` again
+x = temp;
+```
+
+This is a bit of a pain, but it's the best that can be done with arrays directly: re-size them if needed. Since the re-size operations involves copying all values of the existing array over, Array insertion is considered an $O\left(n\right)$ operation. 
+
+#### Array deletion operation
+
+So if the array `x` has elements `{2, 5, -1, 10, ...}`, deletion would be the operation
+to remove one of them from the array, an shift the remaining elements to fill its place. This is similair to the insertion operation, in that it will involve 
+creating a temporary array and copying over the remaining elements, a $O\left(n\right)$ procedure overall.
+
+## The List ADT
+
+As seen above, it is possible to define convenience operations around basic 
+arrays to make them a bit more dynamic. More generally speaking, it is convenient 
+to have access to a 1-dimensional array-like data structure that can support things 
+like adding values, removing them, searching for them, and changing them on the fly, as part of the basic functionality of the structure itself. This abstract 
+notion of a data structure (our wishlist above), is known as a **List**.
+
+Java has a collection of List implementations that are ready to use, but we will explore the topic by first creating our own example implementations. 
+
+A data structure that calls itself a list will generally support these operations:
+
+- `List()` : a constructor for creating an empty list
+- `boolean isEmpty()` : an operation for testing whether or not a list is empty
+- `void add(Object value, int index)` : adds an element to a list at a specific index. If no index is given, add it at the end of the list.
+- `void get(int index)` : an operation for getting the value of an element at a specific place in the list
+- `void set(int index, Object value)` : an operation for setting the value of an entity
+- `void remove(int index)` : an operation for removing an entity from a list at a specific position
+
+Before exploring how to create something like this, we can make an `interface` to list what it is that we'd like a List to do.
+
+```java
+public interface IList<T> {
+    public boolean isEmpty();
+    public void add(T value);
+    public T get(int index);
+    public void set(T value, int index);
+    public void remove(int index);
+}
+```
+
+Note that this interface generalized the kind of values that it will store using the generic indicator `T`. A class that implements this interface may create these methods to store integers, doubles, Strings, or any other object. 
+
+Let's implement this to create a list data structure that accepts `long`s:
+
+The full implementation of `LongArrayList` is:
+
+```java
+public class LongArrayList implements IList<Long> {
+
+    public long[] data = new long[5];
+    public int length = 0;
+
+    @Override
+    public boolean isEmpty() {
+        if (length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void add(Long value) {
+        // adds value to the end of the list
+        data[length] = value;
+        length++;
+
+        // resize, copy over data
+        if (length >= data.length) {
+            long[] temp = new long[data.length*2];
+            for (int i = 0; i < data.length; i++) {
+                temp[i] = data[i];
+            }
+            data = temp;
+        }
+
+    }
+
+    @Override
+    public Long get(int index) {
+        if (index >= length) {
+            return data[length - 1];
+        }
+
+        return data[index];
+    }
+
+    @Override
+    public void set(Long value, int index) {
+        data[index] = value;
+    }
+
+    @Override
+    public void remove(int index) {
+
+        for (int i = index; i < length; i++) {
+            data[i] = data[i + 1];
+        }
+        length += -1;
+    }
+
+    public String toString() {
+        String output = "";
+        for (int i = 0; i < length; i++) {
+            output += Long.toString(data[i]) + " ";
+        }
+        return output;
+    }
+
+    public int size() {
+        return length;
+    }
+```
+
+### Example use: 
+
+
+## Java's default implementation: *ArrayList*
+
+Not surprisingly, dynamic arrays that expose a list type of interface are a very convenient data structure, and Java comes with it's own implementation of it.
+
+To create one, we need to specify the data type that it will store using generics. 
+So to create an `ArrayList` of doubles, we could write
+
+```java
+ArrayList<Double> data = new ArrayList<>();
+```
+Note that we had to specify the data type double using the object version `Double` rather than the primitive data type version `double`. That is a bit of an idiosyncrasy of generics in Java, but `Double`s will work fine. Note also that we don't have to declare the `Double` type on both sides of the declaration and assignment, it is inferred on the right hand side.
+
+If you're like me, you probably prefer to declare the structure based on the interface that you are using, rather than the exact implementation (which will come in on the assignment side). What I mean is that I would likely write the above as 
+
+```java
+List<Double> data = new ArrayList<>();
+```
+
+`List` is actually an `interface`, and you can't create an instance of it directly. But what I'm saying here is that `data` will do the stuff that any `List` will do. And, separately, I am also saying that it will be an `ArrayList`. 
+
+Why say that separately? Well there is actually more than one kind of list implementation. In the next section we'll talk about Linked Lists. It's entirely possible that we might want to do something like:
+
+```java
+// I know I want to work with data as a list
+List<Double> data;
+
+if (some_condition == true) {
+    data = new ArrayList<>();
+}
+else {
+    data = new LinkedList<>();
+}
+```
+
+So I know I want to use a list, but I can make the decision about what the underlying implementation is later in the same program if I'd like.
+
+Either way, once I have a list instance that I want, [it's very easy to use](https://docs.oracle.com/javase/7/docs/api/java/util/List.html):
+
+```java
+data.add(0.52);
+data.add(-1032.34);
+data.remove(0); // remove first element
+
+for (double value : data) {
+    System.out.println(value);
+}
+...
+```
 
 [Back to index](index.html)
 </xmp>
