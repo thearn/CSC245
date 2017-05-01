@@ -1,2 +1,5 @@
 *DS_Store
 _blank.html
+*.log
+*.aux
+*.pdf
