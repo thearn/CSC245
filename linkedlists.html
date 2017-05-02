@@ -9,17 +9,96 @@
 # Linked Lists
 ----------------
 
-As we saw, dynamic arrays
+```java
+class Node {
+    public double value = 0.0;
+    public Node next;
+}
+```
 
-- nodes
-- references, aliasing,
-------------------------------
+```java
+Node start = new Node();
+start.value = 3.14;
+```
 
+We can create a second one, and link to it from the first
 
-[Back to index](index.html)
+```java
+start.next = new Node();
+start.next.value = 2.71;
+```
 
-------------------------------
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work by Tristan Hearn is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+And a third element:
+
+```java
+start.next.next = new Node();
+start.next.next.value = -1425.21;
+```
+
+We can loop and add several new nodes:
+
+```java
+Node current = start.next.next;
+
+// add some elements at the end
+for (int i = 4; i < 10; i++) {
+    current.next = new Node();
+    current.next.value = (double) i;
+    current = current.next;
+}
+```
+
+Adding an element to a specific location is easy, but you need to navigate to it first
+
+```java
+// add an element at the 3rd position
+current = start;
+for (int i = 0; i < 3 - 1; i++) {
+    current = current.next;
+}
+// add the element
+Node z = new Node();
+z.next = current.next;
+current.next = z;
+```
+
+We can print every value by visiting each node from start to end 
+
+```java
+// loop over entire structure
+current = start;
+while (current != null) {
+    System.out.println(current.value);
+    current = current.next;   
+}
+```
+
+Just as we can add elements to a specific place, we can delete one too
+
+```java
+// delete 4th element
+current = start;
+for (int i = 0; i < 4 - 1; i++) {
+    current = current.next;
+}
+// get rid of element
+current.next = current.next.next;
+```
+
+The class:
+
+```java
+Class LList implements IList {
+    
+    private Node start;   
+    private Node end;
+    private int size;
+
+}
+```
+
+<div id="footer"></div>
+
 </xmp>
 
 <script src="src/strapdown.js"></script>
@@ -29,4 +108,6 @@ As we saw, dynamic arrays
     tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
   });
 </script>
+<script src="src/jquery-3.2.1.min.js"></script>
+<script src="src/footer.js"></script>
 </html>
