@@ -33,7 +33,7 @@ Consider what these operations look like for the basic typed arrays that we have
 
 Arrays are great because we can access any location in the array by index directly. For example, if `x` is an array, we know that we can get the 3rd element of `x` by accessing `x[2]`. Behind the scenes, arrays are represented by a contiguous block of memory, so the accessed locations are fixed offsets from the starting value.
 
-This means that the array access operation is actually independent of the size of the array itself, **and is therefore an** $O\left(1\right)$ **operation.**
+This means that the array access operation is actually independent of the size of the array itself, **and is therefore an** $\mathcal{O}(1)$ **operation.**
 
 #### Array search operation:
 
@@ -51,7 +51,7 @@ public int search(String value, String[] words) {
 }
 ```
 
-We saw this before in the discussion on [Big-O notation](big_o.html), and that this was an operation with $O\left(n\right)$ (i.e. linear) complexity. Therefore, the search operation for arrays is $O\left(n\right)$.
+We saw this before in the discussion on [Big-O notation](big_o.html), and that this was an operation with $\mathcal{O}(n)$ (i.e. linear) complexity. Therefore, the search operation for arrays is $\mathcal{O}(n)$.
 
 #### Array insertion operation:
 
@@ -83,13 +83,13 @@ for (int i = 2; i < x.length; i++) {
 x = temp;
 ```
 
-This is a bit of a pain, but it's the best that can be done with arrays directly: re-size them if needed. Since the re-size operations involves copying all values of the existing array over, Array insertion is considered an $O\left(n\right)$ operation. 
+This is a bit of a pain, but it's the best that can be done with arrays directly: re-size them if needed. Since the re-size operations involves copying all values of the existing array over, Array insertion is considered an $\mathcal{O}(n)$ operation. 
 
 #### Array deletion operation
 
 So if the array `x` has elements `{2, 5, -1, 10, ...}`, deletion would be the operation
 to remove one of them from the array, an shift the remaining elements to fill its place. This is similair to the insertion operation, in that it will involve 
-creating a temporary array and copying over the remaining elements, a $O\left(n\right)$ procedure overall.
+creating a temporary array and copying over the remaining elements, a $\mathcal{O}(n)$ procedure overall.
 
 ## The List ADT
 
