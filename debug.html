@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<title>Debugging</title>
+
+<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
+
+<xmp theme="spacelab" style="display:none;">
+
+General debugging tips
+------------------------------
+
+It's a very natural thing to run into compile and run-time errors when developing code, especially as a new programmer. Resolving them will often take a careful 
+eye that is specific to the problem that your code is trying to solve. But often
+enough it will be an example of some common pitfalls that we can categorize.
+
+This is a working list, and I'll be adding to it as I run into things, and as 
+students ask questions about their own errors.
+
+- `java.lang.OutOfMemoryError: Java heap space` 
+
+    Now this can be a tricky one to run into, it means that the running program has exceeded the amount of allowable heap memory. In other words, the number of objects (or the size of them) in your program is too large, and exceeded the limits placed on the JVM your program is executing within. There are a few possibilities for why this could happen.
+
+    Platform constraints are one possibility. If you're running on a platform that has pretty limited computing resources (like a Raspberry Pi), the JVM has fewer resources to play with than if you were on a desktop platform. You can [increase the default memory limits](http://stackoverflow.com/questions/6452765/how-to-increase-heap-size-of-jvm) if you believe that this is the source of the problem.
+
+    But the other (and simpler, and probably more likely) possibility is that you are accidentally creating too many objects, or data structures with too many elements. Something that would have put a bound on that has failed to do its job. 
+
+    Here's an example of one that I ran into when tinkering with some ideas for this course.
+
+    #### Short case study
+
+    So for an example, consider the following procedure: 
+
+    >- Start with an integer `n`
+    >   - If it's even, divide it by 2
+    >   - If instead it's odd, multiple by 3 and add 1
+    >- repeat the above, if it is equal to 1, stop.
+
+    For example, if we start with the number 13, we'd go through the sequence:
+
+    $$ {13, 40, 20, 10, 5, 16, 8, 4, 2, 1} $$
+
+    Starting from any number, does this process always lead to the number 1? This is called the [Collatz Conjecture](https://en.wikipedia.org/wiki/Collatz_conjecture) and very surprisingly despite being pretty simple to describe, it's unknown if it is true or not. It's been brute-force checked [for every number between 1 and about $5.48 \times 10^{18}$](http://mathworld.wolfram.com/CollatzProblem.html) and, so far, has been true every time.
+
+    For a starting number $n$, it's pretty easy to generate the resulting Collatz sequence in any programming language, and print its size (not including the start number). Let's say we're also saving the values of the sequence in a list data structure for some later use:
+
+    ```java
+    List<Integer> sequence = new ArrayList<>();
+    int n = 13;
+    while (n != 1) {
+        if (n % 2 == 0) { // if even number
+            n = n / 2;
+        }
+        else { // if odd number
+            n = 3*n + 1;
+        }
+        sequence.add(n);
+    }
+    System.out.println(sequence.size());
+    ```
+
+    For $n=13$, we'd correctly collect the sequence and print a length of 9. 
+
+    For $n=113384$, we'd correctly print 61. 
+
+    For one less than that, $n=113383$, the resulting sequence has a length of 247. But with our code, we'd get a `java.lang.OutOfMemoryError: Java heap space` exception. Why is that?
+
+    At a surface level, the error tells us we ran out of heap memory. Which means the list `sequence` got too large. We know this because it's the only thing in our code capable of allocating new memory (in the `sequence.add` step).
+
+    Which means that apparently, the Collatz process failed to terminate at 1. But we know that it has to, it's been checked by others already. Something else is preventing the process from terminating.
+
+    What would cause this? If you try printing out $n$ at each iteration when starting from $113383$ (a natural next step for debugging), the sequence would look like:
+
+    $${113383, 340150, 170075, \ldots, 1654740898, 827370449, -1812855948, -906427974, \ldots}$$
+
+    We see that eventually the process reaches the integer $827370449$. The next step should result in $n = 2482111348$, but that is larger the max size that can actually be stored in an `int` variable! So the number overflows and "wraps around" the limit to give us $827370449 \cdot 3 + 1 -  2^{32} = -1812855948$. And proceeding from this number forward, our `while` loop never terminates, and just keeps appending more and more elements to `sequence`. Eventually, this results in the heap memory overflow. 
+
+    So the underlying problem is not that our program didn't have access to enough RAM, it's really that I picked the wrong data type for my variables.
+
+    The solution: if we use `long` instead, we avoid the overflow and get the correct answer of a sequence length of $247$. 
+
+
+
+------------------------------
+
+
+[Back to index](index.html)
+
+------------------------------
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work by Tristan Hearn is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+</xmp>
+
+<script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+</html>
