@@ -9,6 +9,14 @@
 # Linked Lists
 ----------------
 
+So far, we've seen that we can store a collection of data using array-backed data structures, such as ArrayLists. This has the advantage of having fast $\mathcal{O}(1)$ access to the elements of the list, though the cost of adding and removing elements is $\mathcal{O}(n)$, do to needing to re-allocate an array in order to resize it.
+
+Aside from arrays, there is another implementation strategy for storing related collections of objects in memory, known as [linked data structures](https://en.wikipedia.org/wiki/Linked_data_structure). A strategy that can be used for the implementation of any ADT we have in mind, such as lists.
+
+First, instead of conceptualizing our data as existing as elements within an array, we consider our data as existing as members within an object called a *node*. A node should contain variables that represent single instances of any data that you would like to store within your linked structure. In addition, a node will also contain a reference to **another** (possible multiple) nodes, though these will not be instantiated within the node class itself.
+
+For example, if we'd like to store a collection of `double` variables within a linked data structure, we might create a node class such as:
+
 ```java
 class Node {
     public double value = 0.0;
@@ -16,26 +24,31 @@ class Node {
 }
 ```
 
+We could then start the processes of storing some doubles by creating an instance of our node:
+
 ```java
 Node start = new Node();
 start.value = 3.14;
 ```
 
-We can create a second one, and link to it from the first
+So we have access to one node that holds one value, nothing too exciting yet.
+Next, we can create a second one, and **link** to it from the first:
 
 ```java
 start.next = new Node();
 start.next.value = 2.71;
 ```
 
-And a third element:
+This creates a new `Node()` in heap memory, and links to it from our first node, which has the name "start".
+We can create a third element similarly:
 
 ```java
 start.next.next = new Node();
 start.next.next.value = -1425.21;
 ```
 
-We can loop and add several new nodes:
+Chaining ".next.next.next" references is a bit tedious.
+We can loop and add several new nodes, by using a reference node called `current`:
 
 ```java
 Node current = start.next.next;
@@ -48,7 +61,8 @@ for (int i = 4; i < 10; i++) {
 }
 ```
 
-Adding an element to a specific location is easy, but you need to navigate to it first
+As long as each node in this chain has a reference pointing to it, it will persist in memory.
+Compared to an array, adding an element to a specific location is easy, but you do need to navigate to it in the chain of references (our linked structure) first:
 
 ```java
 // add an element at the 3rd position
@@ -62,14 +76,14 @@ z.next = current.next;
 current.next = z;
 ```
 
-We can print every value by visiting each node from start to end 
+Like any data structure, we can print every value by visiting each node from start to end
 
 ```java
 // loop over entire structure
 current = start;
 while (current != null) {
     System.out.println(current.value);
-    current = current.next;   
+    current = current.next;
 }
 ```
 
@@ -85,38 +99,202 @@ for (int i = 0; i < 4 - 1; i++) {
 current.next = current.next.next;
 ```
 
-The class:
+This may be the trickiest thing to get when it comes to linked data structures in a language with automatic memory management ("garbage collection"): deleting or removing an element from a linked data structure like this is performed by removing any and all references to it from other objects. Once we achieve that, the GC process will delete it for us from heap memory.
+
+Since we see that we can pretty easily, create, read, update and delete elements from a reference and node based structure like this, we can wrap up these operations into methods on a class, to let us make something that legitimately operates like a list.
+
+Before we do that, we can use generics to generalize our node class to accept any data type:
 
 ```java
-Class LList implements IList {
-    
-    private Node start;   
-    private Node end;
-    private int size;
+class Node<T> {
+    public T value;
+    public Node<T> next;
+}
+```
 
+This change isn't major, we can create nodes very much like we did before, we just need to specify what they will contain:
+
+```java
+Node<Double> myNode = new Node<Double>();
+myNode.data = 0.42
+
+Node<String> anotherNode = new Node<String>();
+anotherNode.data = "hello world";
+```
+
+This will make it pretty convenient to make a string list, or int list, etc.
+
+Now we can then proceed to build a linked data structure that actually works like a list, what is typically called a "Singularly Linked List". That is, we can have it extend the exact same IList inteface that we created for our dynamic array list.
+
+To keep things simple, we'll focus on making a linked list of a single type, strings. You'll generalize it with generics to all types in the homework.
+
+The class, which we'll write piece by piece in the lecture looks like:
+
+```java
+public class StringLinkedList  implements IList<String> {
+
+    private Node<String> start;
+    private Node<String> end;
+
+    private int length = 0;
+
+
+    public static void main(String[] args) {
+
+        StringLinkedList data = new StringLinkedList();
+
+        // a bit of testing
+
+        data.add("hello");
+        data.add("world");
+        data.add("abc");
+        data.add("deg");
+        data.add("hgd");
+        data.add("okay");
+        System.out.println("");
+        data.log();
+        System.out.println("");
+        data.remove(5);
+        data.log();
+        System.out.println("");
+        data.add("working?", 2);
+        data.log();
+
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (start == null) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void add(String value) {
+        Node<String> newguy = new Node<String>();
+        newguy.data = value;
+
+        if (isEmpty()) {
+            start = newguy;
+            end = newguy;
+        }
+        else {
+            end.next = newguy;
+            end = newguy;
+        }
+        length++;
+    }
+
+    public void add(String value, int index) {
+        if (index == 0) {
+            add(value);
+            return;
+        }
+
+        Node<String> target = getNode(index - 1);
+
+        Node<String> newguy = new Node<>();
+        newguy.data = value;
+
+        newguy.next = target.next;
+        target.next = newguy;
+
+        length++;
+    }
+
+    public Node<String> getNode(int index) {
+        Node<String> current = start;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+
+            if (current == null) {
+                throw new RuntimeException("List index " + Integer.toString(index)+ " does not exist!");
+            }
+
+        }
+        return current;
+    }
+
+    public int size() {
+        return length;
+    }
+
+    @Override
+    public String get(int index) {
+        Node<String> target = getNode(index);
+        return target.data;
+    }
+
+    @Override
+    public void set(String value, int index) {
+        Node<String> target = getNode(index);
+        target.data = value;
+    }
+
+    public void log() {
+        Node<String>current = start;
+        while (current != null) {
+            System.out.println(current.data);
+            current = current.next;
+        }
+    }
+
+    @Override
+    public void remove(int index) {
+        if (index == 0) {
+            start = start.next;
+        }
+        else if (index >= length) {
+            throw new RuntimeException("List index " + Integer.toString(index)+ " does not exist!");
+        }
+        else {
+            Node<String> target = getNode(index - 1);
+            target.next = target.next.next;
+        }
+        length+= -1;
+    }
 }
 ```
 ## Complexity of linked list operations
 
+Considering the behavior of each of the operations that we implemented, we can classify them by their complexity.
+
 #### Access
 
-- $\mathcal{O}(n)$
+- $\mathcal{O}(n)$: We need to follow references to reach any position.
 
 #### Search
 
-- $\mathcal{O}(n)$
+- $\mathcal{O}(n)$: we need to follow references to locate a value.
 
 #### Insertion
 
-- At the start or end: $\mathcal{O}(1)$
+- At the start or end: $\mathcal{O}(1)$ : We have direct references to the start and end.
 
-- At a specific position: $\mathcal{O}(n)$
+- At a specific position: $\mathcal{O}(n)$: We need to follow references to reach any position.
 
 #### Deletion
 
-- From the start or end: $\mathcal{O}(1)$
+- From the start or end: $\mathcal{O}(1)$: We have direct references to the start and end.
 
-- From a specific position: $\mathcal{O}(n)$
+- From a specific position: $\mathcal{O}(n)$: We need to follow references to reach any position.
+
+## Java's built-in implementation, *LinkedList*
+
+From an interface perspective, `LinkedList` is used the exact same way as `ArrayList`:
+
+```java
+List data = new LinkedList<>();
+
+data.add(0.52);
+data.add(-1032.34);
+data.remove(0); // remove first element
+
+for (double value : data) {
+    System.out.println(value);
+}
+```
 
 <div id="footer"></div>
 
