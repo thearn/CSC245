@@ -3,5 +3,6 @@ _blank.html
 *.log
 *.aux
 *.pdf
-images/tikz
+*.aux
+*.log
 hw/

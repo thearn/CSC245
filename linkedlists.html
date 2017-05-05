@@ -2,7 +2,6 @@
 <html>
 <title>Linked Lists</title>
 
-<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
 
 <xmp theme="spacelab" style="display:none;">
 
@@ -31,6 +30,9 @@ Node start = new Node();
 start.value = 3.14;
 ```
 
+![alt text](images/tikz/heap1.svg?style=tikz "")
+
+
 So we have access to one node that holds one value, nothing too exciting yet.
 Next, we can create a second one, and **link** to it from the first:
 
@@ -39,6 +41,9 @@ start.next = new Node();
 start.next.value = 2.71;
 ```
 
+![alt text](images/tikz/heap2.svg?style=tikz "")
+
+
 This creates a new `Node()` in heap memory, and links to it from our first node, which has the name "start".
 We can create a third element similarly:
 
@@ -46,6 +51,9 @@ We can create a third element similarly:
 start.next.next = new Node();
 start.next.next.value = -1425.21;
 ```
+
+![alt text](images/tikz/heap3.svg?style=tikz "")
+
 
 Chaining ".next.next.next" references is a bit tedious.
 We can loop and add several new nodes, by using a reference node called `current`:
@@ -60,6 +68,13 @@ for (int i = 4; i < 10; i++) {
     current = current.next;
 }
 ```
+
+Visually, this looks like:
+
+![alt text](images/tikz/heap4.svg?style=tikz "")
+
+`current` is a convenient reference that can point to any node along the chain that we'd like, instead of moving around and referring to nodes via `.next.next.next[...]`.
+
 
 As long as each node in this chain has a reference pointing to it, it will persist in memory.
 Compared to an array, adding an element to a specific location is easy, but you do need to navigate to it in the chain of references (our linked structure) first:
@@ -100,6 +115,12 @@ current.next = current.next.next;
 ```
 
 This may be the trickiest thing to get when it comes to linked data structures in a language with automatic memory management ("garbage collection"): deleting or removing an element from a linked data structure like this is performed by removing any and all references to it from other objects. Once we achieve that, the GC process will delete it for us from heap memory.
+
+For a visual example, if we were to delete the third element from the graph shown above, it would look like:
+
+![alt text](images/tikz/heap5.svg?style=tikz "")
+
+Here the third node and it's data have becomed "orphaned", in that no other object points to them. The GC will then free the memory that they occupy.
 
 Since we see that we can pretty easily, create, read, update and delete elements from a reference and node based structure like this, we can wrap up these operations into methods on a class, to let us make something that legitimately operates like a list.
 

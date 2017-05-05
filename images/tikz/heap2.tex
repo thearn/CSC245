@@ -1,0 +1,46 @@
+%!tikz editor 1.0
+\documentclass{article}
+\usepackage{tikz}
+\usepackage[graphics, active, tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+
+%!tikz preamble begin
+\usetikzlibrary{positioning}
+%!tikz preamble end
+
+
+\begin{document}
+%!tikz source begin
+\begin{tikzpicture}
+
+ \tikzset{EdgeStyle/.style   = {thick,  ->}}
+ 
+\draw (0,0) rectangle (16,8);
+\draw (0,8) rectangle (1.2,7.2) node[pos=.5] {\bf heap};
+
+\draw (0,1.5) -- (16, 1.5);
+\draw (0,1.5) rectangle (1.5,0.65) node[pos=.5] {\bf stack};
+
+
+\node [draw=blue] at (15,2.5) (null) {\large \bf null};
+
+\node [draw=red] at (2.5,2.5) (first) {\large \bf Node};
+\node [draw=blue,above left = 1cm of first] (first_value) { 3.14};
+\draw[EdgeStyle] (first) to node[left]{value}(first_value);
+
+
+
+\node [draw=red, above =2 cm of first] (second) {\large \bf Node};
+\node [draw=blue,above left = 1cm of second] (second_value) { 2.71};
+\draw[EdgeStyle] (second) to node[above right]{value}(second_value);
+\draw[EdgeStyle] (second) to node[above ]{next}(null);
+
+\draw[EdgeStyle] (first) to node[right]{next}(second);
+\node at (2.5,1.1) (x) {\large \bf start};
+
+\draw[EdgeStyle, bend left=20]  (x) to (first);
+
+\end{tikzpicture}
+%!tikz source end
+
+\end{document}

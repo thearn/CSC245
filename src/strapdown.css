@@ -41,6 +41,15 @@ img[src$="centerme"] {
   margin: 0 auto;
 }
 
+img[src$="tikz"] {
+  display:block;
+  margin: 0 auto;
+min-width: 90%;
+width: auto;
+height: auto;
+}
+
+
 /*******************************************************************
 
 This chunk is for Google's Code Prettify:
