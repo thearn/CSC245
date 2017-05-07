@@ -116,11 +116,11 @@ current.next = current.next.next;
 
 This may be the trickiest thing to get when it comes to linked data structures in a language with automatic memory management ("garbage collection"): deleting or removing an element from a linked data structure like this is performed by removing any and all references to it from other objects. Once we achieve that, the GC process will delete it for us from heap memory.
 
-For a visual example, if we were to delete the third element from the graph shown above, it would look like:
+For a visual example, if we were to delete the third element from the graph shown above, we would navigate by iterating over the nodes with `current = current.next`, until it points to the element just before the one to be removed. Then we would nullify it's reference to the next element `current.next = null`.
 
 ![alt text](images/tikz/heap5.svg?style=tikz "")
 
-Here the third node and it's data have becomed "orphaned", in that no other object points to them. The GC will then free the memory that they occupy.
+Here the third node and it's data have become "orphaned", in that no other object points to them. The GC will then free the memory that they occupy.
 
 Since we see that we can pretty easily, create, read, update and delete elements from a reference and node based structure like this, we can wrap up these operations into methods on a class, to let us make something that legitimately operates like a list.
 
@@ -283,7 +283,7 @@ Considering the behavior of each of the operations that we implemented, we can c
 
 #### Access
 
-- $\mathcal{O}(n)$: We need to follow references to reach any position.
+- $\mathcal{O}(n)$: We need to follow references to reach an arbitrary position.
 
 #### Search
 
@@ -293,13 +293,17 @@ Considering the behavior of each of the operations that we implemented, we can c
 
 - At the start or end: $\mathcal{O}(1)$ : We have direct references to the start and end.
 
-- At a specific position: $\mathcal{O}(n)$: We need to follow references to reach any position.
+- At a specific position: $\mathcal{O}(n)$: We need to follow references to reach any other position.
 
 #### Deletion
 
 - From the start or end: $\mathcal{O}(1)$: We have direct references to the start and end.
 
-- From a specific position: $\mathcal{O}(n)$: We need to follow references to reach any position.
+- From a specific position: $\mathcal{O}(n)$: We need to follow references to reach any other position.
+
+## Caveats
+
+The [architecture of modern CPUs and their relationship to RAM](https://en.wikipedia.org/wiki/Memory_hierarchy) have [implications](https://en.wikipedia.org/wiki/Locality_of_reference) on the choice between array-based vs. link-based data structures, that isn't quite captured by the asymptotic view of performance offered by Big-O. The short answer is that array-based structures like `ArrayList` may perform better than `LinkedList` in ways that we might not expect, though this tends to be more apparent in lower level languages in situations where performance is being squeezed our of the margins (C, C++, etc.). We'll talk about this more in class. 
 
 ## Java's built-in implementation, *LinkedList*
 

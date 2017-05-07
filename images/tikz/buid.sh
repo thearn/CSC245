@@ -7,3 +7,6 @@ for i in *.tex; do
     filename="${i%.*}";
     pdf2svg ${filename}.pdf ${filename}.svg;
 done
+
+rm -rf *.aux
+rm -rf *.log

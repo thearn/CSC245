@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<title>Recursion</title>
+
+<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
+
+<xmp theme="spacelab" style="display:none;">
+# Recursion
+
+Recursion is a procedure which is self-referential, such as a function that calls itself as part of its operation. This may sound odd on the surface but can actually allow for very expressive forms for certain algorithms and operations on data structures.
+
+For example, consider a function meant to compute the factorial of an integer:
+
+$$ x! = x \cdot \left(x -1 \right) \cdot \left( x - 2\right) \cdot \ldots \cdot 1$$
+
+e.g. the factorial of the number $5$ is 
+
+$$ 5! = 5 \cdot 4 \cdot 3 \cdot 2 \cdot 1 = 120$$
+
+There are a few ways that we could define a method to do this in Java. For example, we could do it with a loop:
+
+
+```java
+public long factorial(long n) {
+    long result = 1;
+    for (long i = 1; i <= n; i++) {
+        result = result * i;
+    }
+    return result;
+}
+```
+
+But another way to think about this problem is by observing that we can decompose the definition a bit: the factorial of a number is equal to that number times the factorial of one less than the number:
+
+$$x! = x \cdot \left(x - 1\right)! $$
+
+which, in a program, we could imagine that kind of dynamic as 
+
+```java
+public long factorial(long n) {
+    return n * factorial(n - 1);
+}
+```
+
+Running this would give a `java.lang.StackOverflowError`. In the mathematical expression above, it's understood that the procedure would stop once the process reached the number 1. But our program has no idea that it is the case. We have to make that explicit by declaring that as a "base case"
+
+```java
+public static long factorial(long n) {
+    if (n == 1L) {
+        return 1L;
+    }
+    else {
+        return n * factorial(n - 1);
+    }
+
+}
+```
+
+So when this method receives a `long` 1, it simply returns to whatever called it. Otherwise, it "recurses" down a level, and multiplies the result by `n` according to the definition.
+
+## Call Stack Analysis
+
+It's very important to understand what is going on in memory when you use a recursive implementation of something, particularly in the stack location of the program's memory.
+
+Every time you enter into the context of a method like `factorial`, the program will create what is called a "stack frame" to represent all data that is local to that method. When a method calls another method, a new stack frame is placed "on top" of the current stack frame, until that method completes its execution and returns its value. At that point, the stack frame is removed, and stack frame for the current context will be on "top". 
+
+This is actually no different when a method calls itself, in the case of recursion. Each call to itself results in the creation of a new stack frame, which requires some memory overhead. When we reach the "base case" of a recursion (when the method actually starts to return something, rather than call itself down another level), the stack frames begin deconstruction one by one.
+
+For example, when we call `factorial` with a value of `5L`, the build up of stack frames would look like:
+
+```
+factorial(5L)
+  = 5 * factorial(4L)
+      ..  * 4 * factorial(3L)
+           .. * 3 * factorial(2L)
+               .. * 2 * factorial(1L)
+                    .. * 1
+```
+
+At this point, they would begin to roll "back up" to the stack frame representing the original call to the `factorial` method:
+
+```
+factorial(5L)
+  = 5 * factorial(4L)
+      ..  * 4 * factorial(3L)
+           .. * 3 * factorial(2L)
+               .. * 2 * 1
+```
+
+```
+factorial(5L)
+  = 5 * factorial(4L)
+      ..  * 4 * factorial(3L)
+           .. * 3 * 2
+```
+
+```
+factorial(5L)
+  = 5 * factorial(4L)
+      ..  * 4 * 6
+```
+
+```
+factorial(5L)
+  = 5 * 24
+```
+
+```
+= 120
+```
+
+At this point, all stack levels have "popped" back up to the original method call, which returns the aggregated value back to whatever called the method.
+
+## Caveats
+
+Recursion is a potentially powerful technique for expressing solutions to problems that naturally decompose into smaller versions of themselves. And recognizing that kind of dynamic is a major part of being able to find efficient solutions to what seem like complex problems.
+
+However, as we see recursion operates by making use of program stack frames to store algorithmic iteration data. Unfortunately, stack space may be very limited in many computational environments, and the JVM tends to be one of them. In other words, stack memory is not optimized for this kind of purpose. It also holds that any algorithm that may be expressed using a recursive function can be expressed using iteration (`for` and `while` loops) or using our own stack data structure in heap memory rather than piggy backing the program's call stack (we'll discuss this in a few sections). 
+
+The shorter version is, in many real-world projects, the use of recursion is pretty strongly discouraged. But not universally or in all contexts. 
+
+### The rule of thumb that I would suggest for recursion:
+
+> If you are executing an algorithm on a size $n$ data structure, and see an opportunity to write a clean-looking recursive implementation:
+
+> - If your algorithm is $\mathcal{O}(\log n)$ or more efficient, recursion is probably safe, you probably won't blow up the call stack. An example of safe usage would be binary search.
+
+> - If it is greater than logarithmic complexity, the stack overflows are a pretty real possibility, and an iterative implementation should strongly be considered. An example of this would be the factorial function, which is unfortunately $\mathcal{O}(n)$ (one iteration or recursion per unit value of its integer input).
+
+<div id="footer"></div>
+
+</xmp>
+
+<script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+
+<script src="src/jquery-3.2.1.min.js"></script>
+<script src="src/footer.js"></script>
+
+</html>
