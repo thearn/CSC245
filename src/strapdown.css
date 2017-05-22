@@ -44,7 +44,7 @@ img[src$="centerme"] {
 img[src$="tikz"] {
   display:block;
   margin: 0 auto;
-min-width: 90%;
+min-width: 60%;
 width: auto;
 height: auto;
 }

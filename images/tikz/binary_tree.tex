@@ -1,0 +1,42 @@
+%!tikz editor 1.0
+\documentclass{article}
+\usepackage{tikz}
+\usepackage[graphics, active, tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+
+%!tikz preamble begin
+\usetikzlibrary{positioning}
+%!tikz preamble end
+
+
+\begin{document}
+%!tikz source begin
+\begin{tikzpicture}[very thick,level/.style={sibling distance=60mm/#1}]
+\tikzstyle{vertex}=[draw,fill=black!5,circle,minimum size=20pt,inner sep=0pt]
+ \tikzset{EdgeStyle/.style   = {thick,  }}
+ 
+
+\node [vertex] (r){$17$}
+  child {
+    node [vertex] (a) {$19$}
+    child {
+      node (1) [vertex] {$20$}
+    }
+    child {
+      node [vertex] {$3$}
+      child {node (2)[vertex] {$7$}}
+      child {node (3)[vertex] {$2$}}
+    }
+  }
+  child {
+    node (5)[vertex] {$9$}
+    child {
+      node (4)[vertex, left=1] {$8$}
+    }
+  };
+  
+
+\end{tikzpicture}
+%!tikz source end
+
+\end{document}

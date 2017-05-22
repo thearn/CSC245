@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<title>Binary Trees</title>
+
+<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
+
+<xmp theme="spacelab" style="display:none;">
+
+# Binary Trees
+
+When we first introduced the idea of linked data structures, you probably noted
+how flexible the concept seemed. The idea of dynamically building a data structure
+on the heap by hopping between references gives us a lot of architectural options
+that go simply beyond just building analogies of something sequential, like an array.
+
+For example, we've experimented with node-based linked data structures composed of
+elements like
+
+```java
+public class Node() {
+    double value;
+    Node next;
+}
+```
+This can be used to create a linked list. You could easily extend this to have an additional reference to a previous element, `Node previous`, and create what is known as a "doubly-linked list" that lets you iterate in both a forward and backward direction through the structure.
+
+But we can go beyond that as well. Consider the problem of making a structure that instead of going forward and backward, instead goes left or right (but not backwards). Something like:
+
+```java
+public class TreeNode {
+    int value;
+    TreeNode left;
+    TreeNode right;
+}
+```
+
+We would call a structure built from these nodes a *binary tree*, since at each element, we have exactly two paths that we can proceed to: a "left" node, and a "right" node.
+
+Binary trees are extremely useful for representing data corresponding to a sequence of "yes-or-no" or "this-or-that" decisions, which is extremely common in many contexts. Some of these, as we'll see, do require a more specific notion of a tree, but we will cover that soon.
+
+
+Just like with a linked list, we can start to get a handle on trees by implementing a "bare" one very quickly, using the above node class. For example, imagine implementing the following tree of data:
+
+![alt text](images/tikz/binary_tree.svg?style=tikz "")
+
+Manually inputting these elements is a bit tedious (and we're doing it only for examples sake here), but the ability between references using `left` and `right` makes it at least manageable to implement it visually from the graph:
+
+```java
+TreeNode head = new TreeNode();
+head.value = 17;
+
+head.left = new TreeNode();
+head.left.value = 19;
+
+head.right = new TreeNode();
+head.right = 9;
+
+head.left.left = new TreeNode();
+head.left.left.value = 20;
+
+head.left.right = new TreeNode();
+head.left.right.value = 3;
+
+head.right.left = new TreeNode();
+head.right.left.value = 8;
+
+head.left.right.left = new TreeNode();
+head.left.right.left.value = 7;
+
+head.left.right.right = new TreeNode();
+head.left.right.right.value = 2;
+```
+
+An important thing to consider is that all nodes at an "end" of the graph that do not point to an instance of the node (what are called "leaf" node of the tree), implicitly point to `null`. A slightly more accurate view of the above graph, as implemented above, would be:
+
+![alt text](images/tikz/binary_tree_wnull.svg?style=tikz "")
+
+
+## Example use: interpreting Morse code
+
+There are a few good examples where you might want to implement a basic binary tree as a data structure. One really good one is to build an interpreter for [Morse code](https://en.wikipedia.org/wiki/Morse_code).
+
+Morse code is a text encoding method based off a sequence of two alternating tones, what are usually called "dot" and "dash" (or . and -). This allows you to send a text signal while only needing to be able to turn something on and off, at the correct intervals.
+
+A table of morse code can be seen on the Wikipedia page linked above:
+
+![alt text](images/morse.png "")
+
+What I'd like is to have a data structure that represents process of decoding a string representing a Morse code into a character.
+
+For example, if I'm given the string `.---`, I can look up from the table and see that this corresponds to a `J`. Something like a HashMap (associating each morse code input to its corresponding character) could solve this.
+
+But consider an alternative: each element of the morse code has only two possible states: a dot, or a dash. Instead of a table lookup, I could represent this as a branching tree of dot and dash possibilities
+
+![alt text](images/morse_tree.svg?style=tikz "")
+
+So when I see `.---`, I stop, and look at the first character, the dot. A single dot is an `E`, if that is the last part of the string, I'd return the `E`. But instead, I follow along with three dashes, which would take me to `A`, `W`, then finally `J`. At this point, I reach the end of my input string of morse code, so I return the `J`.
+
+What is the complexity of this operation? Consider that at each step, I am cutting out half of the remaining tree. We have seen this dynamic before in binary search operations; and this is in fact an example of binary search as well!
+
+> #### Complexity
+> For an alphabet of size $n$, the search procedure described above has an asymptotic cost of $\mathcal{O}(\log n)$.
+
+Now from a high level, this really doesn't appear to be that advantageous compared to a hash table solution, which has average amortized complexity of $\mathcal{O}(1)$. And for a problem this small (the table has only 26 letters and 10 numbers!), a hash table would work very well.
+
+The real benefits come when we specialize trees to organize data on the left versus the right side more purposefully, to produce efficient query-able structures.
+
+<div id="footer"></div>
+
+</xmp>
+
+<script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+
+<script src="src/jquery-3.2.1.min.js"></script>
+<script src="src/footer.js"></script>
+
+</html>

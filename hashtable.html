@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<title>Hash Tables</title>
+
+<!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
+
+<xmp theme="spacelab" style="display:none;">
+
+So far, we have considered linear data structures, where elements are stored in a sequential way with a fairly non-ambiguous notion of positional order (first element, second element, etc.). The rest of the course will cover non-linear data structures, where the iteration and ordering of elements by position can be a bit more complex.
+
+I think the transition between the two halves is actually a good place to discuss a new type of abstract type, known as a **Map** (sometimes also referred to as a Dictionary or Associative Array).
+
+## Map interface
+
+In a Map, we can store and retrieve data as we can with any data structure. But unlike lists or arrays, we do not want to store or return by the *position* of the data, but rather through the use of a **key**. In other words, all elements within a map are referred to by a key rather than by an index.
+
+To contrast more simply, in an array or list of strings, we could access a particular element by position:
+
+```java
+// get data from index
+String x = data_array[2]; // array access
+
+String x = data_list.get(2); // list access
+```
+
+But in a map, we associate the data that we want with a particular key:
+
+```java
+// setting data
+data_map.put("name", "Tristan");
+data_map.put("age", 34);
+
+// retrieving data
+String s = data_map.get("name");
+int x = dat_map.get("age");
+
+// later, I can update my age using the exact same call as above
+data_map.put("age", 35);
+```
+
+This provides a tremendous amount of flexibility in creating data structures that support rich value-based setting and querying behavior.
+
+It's important to note that in Java, `Map` is an interface that is implemented by a variety of different implemented data structures.
+
+The first that we will cover is called a **Hash Table**.
+
+## Hash Tables
+
+Hash tables are one method for implementing a data structure that has a Map/Dictionary/Associative Array-type of interface. Hash tables store key-value pairs using a function that maps each key to a position within a data structure that actually contains the objects to be stored. This process is known as *hashing* the keys, and the function to perform this is called a [*"hash function"*](https://en.wikipedia.org/wiki/Hash_function).
+
+
+We can summarize the Big-O performance of hash tables as:
+
+> ### Complexity of hash table operations (average):
+> - *Access* : Getting an element by key $\mathcal{O}(1)$
+>
+>- *Search* : Getting an element by a non-key value $\mathcal{O}(n)$
+>
+>- *Insertion* : Adding an element (key-value pair) $\mathcal{O}(1)$
+>
+>- *Deletion* : Removing an element by key $\mathcal{O}(1)$
+
+Note that I listed this as *average* time complexity, i.e. asymptotic performance under the expectation of reasonably favorable scenarios (few hash collisions).
+It's important to note that there are a lot of details that come into the practical performance of hash tables. Complexity of the hashing algorithm, how collisions are handled, locality/CPU cache friendliness, etc.
+
+As such, hash tables are a very carefully optimized class of data structures.
+
+### Java's *HashMap*
+
+Java has a built-in implementation of the hash table data structure in the `HashMap` class. Like all implementations of the `Map` interface, `HashMap` uses generics to specify what type of key and what type of values it can store:
+
+```java
+// store data with strings as keys, and Circle() objects as values
+Map<String, Circle> data = new HashMap<>();
+
+// make and store one
+data.put("first", new Circle(1.24));
+
+// make and store separately
+Circle second = new Circle(0.2);
+data.put("second", second);
+
+// retrieve by key
+
+Circle x = data.get("first");
+```
+
+In this case, I used a string as the type for all keys. What kinds of objects can be used with `HashMap`? Any object can be used that implements `equals()` (a method of determining when two separate instances of your class are "equal") and `hashCode()` (a method to map instances of your class to an integer for use in a hash table) methods correctly [can be used as keys within an instance of `HashMap`](https://www.jetbrains.com/help/idea/2017.1/generating-equals-and-hashcode.html).
+
+
+### The rule of thumb that I would suggest for the use of hash tables:
+
+Hash tables are a great choice if:
+
+- I naturally want to associate a key to an object, based on the problem that I need to solve.
+
+- The keys that I want to use are not already integers.
+
+- I need quick lookups and accesses by key.
+
+- I do not anticipate needed to iterate over the structure very often or at least not in any type of assumed order.
+
+<div id="footer"></div>
+</xmp>
+
+<script src="src/strapdown.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+
+<script src="src/jquery-3.2.1.min.js"></script>
+<script src="src/footer.js"></script>
+
+</html>
