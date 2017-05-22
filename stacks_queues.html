@@ -5,8 +5,243 @@
 <!-- ![alt text](images/setup/intellij_start.png?style=centerme "Starting IntelliJ") -->
 
 <xmp theme="spacelab" style="display:none;">
-Stacks and Queues
------------------
+
+Generalizable linear data structures like Array lists and linked lists can in turn be used to define other more specific data structures. Two good examples of this are *Stacks* and *Queues*.
+
+## Stacks
+
+A *stack* is a kind of linear data structure that only needs to support two operations:
+
+- `push(x)` : Add element `x` to the stack
+- `pop()` : Remove the element most recently "pushed" onto the stack, and return it
+
+When you consider these, the name "stack" begins to make sense, as you can compare this to a stack of cards being added and removed from a pile with the rule that you can only add to or remove from the top-most card on the pile (like in a game of solitaire). This behavior is sometimes referred to as **"Last In, First Out" (LIFO)**.
+
+Stacks are a very common data structure in computing. We've already encountered one when discussing recursive functions: the local executional contexts of a running program are stored as frames within a stack data structure in memory. So when one method calls another method that calls another method, each of those new contexts are "pushed", processed, and "popped" back to the calling method in turn.
+
+Aside from this, they can be a natural choice for storing data for various kinds of algorithms.
+
+#### Creating a stack data structure
+
+Assuming that you have a list implementation, extended it to a new class that conforms to the stack ADT is pretty straightforward. If we had a generic list `myList` that has `add()` and `remove()` methods, we could create a stack by implementing:
+
+```java
+class Stack<T> extends myList<T> {
+
+    public void push(T element) {
+        // adds element to front of the list
+        this.add(element);
+    }
+
+    public T pop() {
+        // get first element
+        T element = this.get(0);
+
+        // remove that last element from the list
+        this.remove(0);
+
+        // return the element
+        return element;
+    }
+}
+```
+
+On the other hand, if you're using the Java standard library's `LinkedList`, you actually already have `push` and `pop` methods available to give you stack-like behavior:
+
+```java
+// create a linked list to use as a stack
+LinkedList<Integer> data_stack = new LinkedList<Integer>();
+
+// push some data
+data_stack.push(0);
+data_stack.push(4);
+data_stack.push(-123);
+
+// pop them off one at a time, always returns the most recently added element
+Integer x = data_stack.pop(); // -123
+x = data_stack.pop(); // 4
+x = data_stack.pop(); // 0
+
+x = data_stack.pop(); // empty list, would give error
+```
+
+You could extend or compose the `LinkedList` class if you wanted to hide all of the other list methods from someone using your stack if you wanted.
+
+When using a linked list for the push and pop operations, they are each $\mathcal{O}(1)$. If you used an array-based implementation with fully dynamic sizing, they would be $\mathcal{O}(n)$.
+
+### Example use: symmetry checking for strings
+
+One example for the use of stack data structures is for checking symmetry in a text string, i.e. checking for [palindromes](https://en.wikipedia.org/wiki/Palindrome).
+
+Consider checking whether the word *racecar* is a palindome. The Java String standard library does not have a built-in method for this. But with a stack, we could:
+
+- push all chars of the string into the stack, until you get to the middle of the string
+- for the last half of the string, compare the element to one popped off of the stack. if they don't match, stop; the string isn't a palindome
+- if everything matches until the end, it is a palindrome.
+
+```java
+public boolean isPalindrome(String text) {
+    char[] letters = text.toCharArray();
+    LinkedList<Character> data_stack = new LinkedList<>();
+
+    int n = letters.length / 2;
+
+    for (int i = 0; i < letters.length; i++) {
+        if (i < n) {
+            data_stack.push(letters[i]);
+        }
+        else {
+            if (letters[i] != data_stack.pop()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+```
+
+## Queues
+
+---------------------
+
+Queues are similar to a stack in that they are a linear data structure with two operations, one to add data to the structure, and one to remove data from it:
+
+
+- `enqueue(x)` : Add element `x` to the queue
+- `dequeue()` : Remove the oldest element from the queue (i.e. the one added least-recently).
+
+
+So difference between a stack and queue is that instead of always removing from the end of the structure (i.e. the element most recently added), queues always remove and return the oldest element in the data structure. This behavior is sometimes referred to as **"First In, First Out" (FIFO)**.
+
+To get a queue implementation with the correct method names, we can easily create our own queue class using Java's built-in `LinkedList` by composition as:
+
+```java
+class Queue<T> {
+    LinkedList<T> data;
+
+    public Queue<T>() {
+        // constructor, initialize list for data insertion
+        data = new LinkedList<T>();
+    }
+
+    public enqueue(T element) {
+        // add data to front of list
+        data.push(element);
+    }
+
+    public T dequeue() {
+        // remove and return oldest data (end of list)
+        return data.removeLast();
+    }
+}
+```
+
+Just like for a stack, if we are using a linked data structure to build a queue, then both the
+`enqueue()` and `dequeue()` methods will be $\mathcal{O}(n)$.
+
+
+```java
+// create a linked list to use as a stack
+Queue<String> data_queue = new Queue<String>();
+
+data_queue.enqueue("hello");
+data_queue.enqueue("world");
+data_queue.enqueue("i");
+data_queue.enqueue("like");
+data_queue.enqueue("queues");
+
+String x = data_queue.dequeue(); // hello
+x = data_queue.dequeue(); // world
+// ...
+```
+
+Queues can be used for a variety of applications, most often along the lines of trying to schedule something (tasks for processor execution, players in a turn-based game, network calls for a server to respond to, etc.). You can conceptualize them as a data structure with elements organized in a line, waiting for their turn to be processed. New elements are always added to the "back" of the line, and processed after all other elements currently in the line.
+
+<!-- ```java
+public class OneLineStore {
+    LinkedList<Integer> customer_line;
+    int[] registers;
+    int steps = 0;
+    boolean done = false;
+
+    public OneLineStore(int n_registers) {
+        registers = new int[n_registers];
+        lines = new LinkedList<Integer>;
+    }
+
+    public line_up(int[] customers) {
+        for (int c : customers) {
+            customer_line.addFirst(c);
+        }
+    }
+
+    public time_step() {
+        for (int i = 0; i < registers.length; i++) {
+
+            if (customer_line.length() == 0) {
+                done = true;
+                return;
+            }
+
+            if (registers[i] == 0) {
+                registers[i] = customer_line.removeLast();
+            }
+            else {
+                registers[i] = registers[i] - 1;
+            }
+        }
+        steps++;
+    }
+
+}
+```
+
+
+```java
+public class MultipleLinesStore {
+    ArrayList<LinkedList<Integer>> customer_lines;
+    int[] registers;
+    int n_registers;
+    int steps = 0;
+    boolean done = false;
+
+    public MultipleLinesStore(int n_registers) {
+        registers = new int[n_registers];
+        this.n_registers = n_registers;
+        lines = new ArrayList<LinkedList<Integer>>;
+        for (int i = 0; i < n_registers; i++) {
+            lines.add(new LinkedList<Integer>);
+        }
+    }
+
+    public line_up(int[] customers) {
+        int k = 0;
+        for (int i = 0; i < customers.length; i++) {
+            k = i % n_registers;
+            lines.get(k).addFirst(customers[i]);
+        }
+    }
+
+    public time_step() {
+        for (int i = 0; i < registers.length; i++) {
+
+            if (customer_line.length() == 0) {
+                done = true;
+                return;
+            }
+
+            if (registers[i] == 0) {
+                registers[i] = customer_line.removeLast();
+            }
+            else {
+                registers[i] = registers[i] - 1;
+            }
+        }
+        steps++;
+    }
+
+}
+``` -->
 
 
 <div id="footer"></div>

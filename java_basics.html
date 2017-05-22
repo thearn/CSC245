@@ -6,7 +6,7 @@
 
 This is meant to be a very short non-comprehensive primer on basic types and syntax of the Java language. It is assumed that all students have some familiarity with these concepts from earlier coursework in other languages.
 
-# Primitive data types
+# Primitive (value) data types
 
 The Java language supports the common data types that you would expect to find in most programming languages. These are sometimes referred to as "value types". They are all pre-defined as keywords in the language, and store values directly (which contrast with object types, which store values to references in memory). The primitive types in Java are:
 
@@ -42,7 +42,7 @@ System.out.println(x);
 -------------------------------
 ### *long*
 
-A `long` is used to represent whole numbers in the range $-2^{64}$ and $2^{64} - 1$. 
+A `long` is used to represent whole numbers in the range $-2^{64}$ and $2^{64} - 1$.
 
 `long`s can represent much larger integer values than `int`, but will use more memory. `int` is generally more appropriate for integers whose range is reasonably bounded (like as iteration indices over arrays, etc.) while `long`s are more appropriate for numerical computing with whole numbers (particularly for number theory).
 
@@ -73,7 +73,7 @@ System.out.println(pi);
 -------------------------------
 
 ### *boolean*
-The `boolean` data type is used to store either `true` or `false`. Used for conditional expressions and many other purposes.
+The `boolean` data type is used to store either `true` or `false`. Used for conditional expressions and many other purposes where you want to limit a variable to two states.
 
 **Example:**
 
@@ -81,7 +81,7 @@ The `boolean` data type is used to store either `true` or `false`. Used for cond
 // boolean stores either true or false
 boolean x = true;
 
-// we can use boolean operations to transform
+// we can use boolean operations to transform them
 boolean y = !x;      // will be `false`
 boolean z = x || y;  // x OR y
 boolean w = x && y;  // x AND y
@@ -93,6 +93,7 @@ System.out.println(x);
 
 ### *char*
 A `char` is used to represent a single text character.
+`char` literals are specified using singe quotes, `'`.
 
 **Example:**
 
@@ -124,12 +125,12 @@ An array of any data type can be declared by following the type name with `[]`.
 **Example:**
 
 ```java
-// an array of integers
+// declaring and creating an array of integers in one line
 int x[] = {0,1,2,3};
 
 // you can also split declaration from actually creating and populating the array
-double numbers[];
-numbers = new double[3]; // makes an empty array of three doubles
+double numbers[]; // creates a reference
+numbers = new double[3]; // sets the reference to an empty array of three doubles
 numbers[0] = 0.2;        // first element
 numbers[1] = -1.56787;   // second element
 numbers[2] = 1e21;       // third element
@@ -148,7 +149,7 @@ matrix = {{1, 2},
 --------------------------------------
 
 ### *null*
-This is a natural type to start with when discussing objects. In fact, the **null** data type can be considered to be the default value of any object that has been declared, but not initialized. Attempting to do most operations with an object that has a *null* value will result in an error known as a `NullPointerException`. We'll come across these in due time. 
+This is a natural type to start with when discussing objects. In fact, the **null** data type can be considered to be the default value of any object that has been declared, but not initialized. Attempting to do most operations with an object that has a *null* value will result in an error known as a `NullPointerException`. We'll come across these in due time.
 
 For now, you can think of the purpose of the *null* type and the `NullPointerException` error is to bring to our attention a situation where something in our program was not properly initialized, and they perform this job very well.
 
@@ -200,7 +201,7 @@ It's worth another careful look at the difference between primitive and referenc
 When I create a variable such as `int x = 0;` a small portion of memory is set aside in **stack** memory for `x` that contains a value of 0. When the current running method is exited, this memory location and value are removed and made available to be overwritten.
 
 In contrast, when I create a reference type, such as an array
-`double[] x` or any object `Something x;`, there is a variable called `x` that is created on the stack like before, but it does not contain the value for `x`. Instead, what this location stores is a reference to another part of the program's memory called the **heap**. The location in the heap that `x` points to will contain the actual value for `x`. 
+`double[] x` or any object `Something x;`, there is a variable called `x` that is created on the stack like before, but it does not contain the value for `x`. Instead, what this location stores is a reference to another part of the program's memory called the **heap**. The location in the heap that `x` points to will contain the actual value for `x`.
 
 The advantage is that while stack frames come into and out of existence, **heap memory is persistent**. That means that the actual data for reference types does not need to be passed around and re-created in each stack frame, we just need to pass around the *location* to the relevant data. We call these passed-around memory locations *references* (some languages have an analogous concept called *pointers*).
 
@@ -236,7 +237,7 @@ data = new myData();
 ```
 
 if we inspected the actual heap memory location where `data` points to, it would be different. So what happened to the one in the old location?
-The JVM garbage collector will automatically reclaim that memory if nothing else in the program points to it. 
+The JVM garbage collector will automatically reclaim that memory if nothing else in the program points to it.
 
 This is an interesting dynamic that we can directly make use of later in the course. The most immediate thing is it gives us the ability to directly modify an object or array by calling a method, without needed to have a return type. For example, if we had a method that took in our class and added 5 to the value field:
 
@@ -259,7 +260,7 @@ add_five(x);
 System.out.println(x.value) // would print 5!
 ```
 
-This can be very convenient, especially for array processing. But I won't always make use of this behavior in every context. 
+This can be very convenient, especially for array processing. But I won't always make use of this behavior in every context.
 
 ----------------------------
 
